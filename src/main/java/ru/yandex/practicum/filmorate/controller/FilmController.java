@@ -20,7 +20,7 @@ public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
     private final LocalDate releaseDate = LocalDate.of(1895, 12, 28);
-    private final static int maxLengthOfDescription = 200;
+    private static final int maxLengthOfDescription = 200;
 
     // Обрабатываем запрос на получение всех фильмов
     @GetMapping
