@@ -35,12 +35,12 @@ public class UserController {
             user.setName(user.getLogin());
         }
         if (user.getBirthday().isAfter(validDate)) {
-            log.warn("Указана дата рождения из будущего");
+            log.warn("Указана дата рождения из будущего {}", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем.");
         }
         user.setId(getNextId());
         users.put(user.getId(), user);
-        log.info("Пользователь успешно добавлен");
+        log.info("Пользователь с id={} успешно добавлен", user.getId());
         return user;
 
     }
@@ -54,7 +54,7 @@ public class UserController {
             throw new ValidationNullException("Id должен быть указан");
         }
         if (newUser.getBirthday().isAfter(validDate)) {
-            log.warn("Указана дата рождения из будущего");
+            log.warn("Указана дата рождения из будущего {}", newUser.getBirthday());
             throw new ValidationException("Дата рождения не может быть в будущем.");
         }
         if (users.containsKey(newUser.getId())) {
@@ -64,10 +64,10 @@ public class UserController {
             oldUser.setLogin(newUser.getLogin());
             oldUser.setEmail(newUser.getEmail());
             oldUser.setBirthday(newUser.getBirthday());
-            log.info("Информация о пользователе успешно обновлена");
+            log.info("Информация о пользователе с id={} успешно обновлена", oldUser.getId());
             return oldUser;
         }
-        log.warn("Пользователь с id {} не найден", newUser.getId());
+        log.warn("Пользователь с id={} не найден", newUser.getId());
         throw new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден");
     }
 

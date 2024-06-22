@@ -39,7 +39,7 @@ public class FilmController {
         checkFields(film);
         film.setId(getNextId());
         films.put(film.getId(), film);
-        log.info("Фильм успешно добавлен.");
+        log.info("Фильм {} с id={} успешно добавлен.", film.getName(), film.getId());
         return film;
 
     }
@@ -59,10 +59,10 @@ public class FilmController {
             oldFilm.setDescription(newFilm.getDescription());
             oldFilm.setDuration(newFilm.getDuration());
             oldFilm.setReleaseDate(newFilm.getReleaseDate());
-            log.info("Фильм успешно обновлён");
+            log.info("Фильм {} с id={} успешно обновлён", oldFilm.getName(), oldFilm.getId());
             return oldFilm;
         }
-        log.warn("Фильм с id = {} не найден", newFilm.getId());
+        log.warn("Фильм с id={} не найден", newFilm.getId());
         throw new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден");
     }
 
@@ -79,11 +79,12 @@ public class FilmController {
     // Валидируем поля
     private void checkFields(Film film) {
         if (film.getDescription().length() > maxLengthOfDescription) {
-            log.warn("Превышена максимальная длина описания фильма");
+            log.warn("Длина описания фильма = {} превышает максимально допустимое = {}",
+                    film.getDescription().length(), maxLengthOfDescription);
             throw new ValidationException("Максимальная длина описания фильма " + maxLengthOfDescription);
         }
         if (film.getReleaseDate().isBefore(releaseDate)) {
-            log.warn("Дата релиза фильма раньше, чем {}", releaseDate);
+            log.warn("Дата релиза фильма {} раньше, чем {}", film.getReleaseDate(), releaseDate);
             throw new ValidationException("Дата релиза фильма должна быть не раньше " + releaseDate);
         }
         if (film.getDuration() <= 0) {
