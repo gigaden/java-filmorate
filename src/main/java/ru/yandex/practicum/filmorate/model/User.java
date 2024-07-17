@@ -3,8 +3,8 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.NonNull;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -16,11 +16,11 @@ public class User {
     @Email
     @NotEmpty
     private String email;
-    @NonNull
+    @NotNull
     @NotBlank
     private String login;
     private String name;
-    @NonNull
+    @NotNull
     private LocalDate birthday;
 
     private Set<Long> friends;
