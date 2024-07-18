@@ -80,7 +80,7 @@ public class FilmService {
 
     }
 
-    public void delLike(Long id, Long userId) {
+    public void deleteLike(Long id, Long userId) {
         log.info("Попытка убрать лайк фильму с id={} юзером с id={}.", id, userId);
         Film film = get(id);
         userService.get(userId);

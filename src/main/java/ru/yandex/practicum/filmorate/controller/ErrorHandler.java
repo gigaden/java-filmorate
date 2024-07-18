@@ -17,35 +17,35 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final NotFoundException e) {
-        log.warn("Ошибка 404 NotFoundException: {}", e.getMessage());
+        log.error("Ошибка 404 NotFoundException: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidation(final ValidationException e) {
-        log.warn("Ошибка 400 ValidationException: {}", e.getMessage());
+        log.error("Ошибка 400 ValidationException: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationNull(final ValidationNullException e) {
-        log.warn("Ошибка 400 ValidationNullException: {}", e.getMessage());
+        log.error("Ошибка 400 ValidationNullException: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        log.warn("Ошибка 400 MethodArgumentNotValidException: {}", e.getMessage());
+        log.error("Ошибка 400 MethodArgumentNotValidException: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOtherExc(final Throwable e) {
-        log.warn("Ошибка 500: {}", e.getMessage());
+        log.error("Ошибка 500: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 }
