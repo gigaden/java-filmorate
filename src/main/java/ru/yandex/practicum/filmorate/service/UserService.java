@@ -20,22 +20,33 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final FriendsService friendsService;
     private final LocalDate validDate = LocalDate.now();
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       FriendsService friendsService) {
         this.userStorage = userStorage;
+        this.friendsService = friendsService;
     }
 
     public Collection<User> getAll() {
         log.info("Получаем коллекцию всех пользователей.");
-        return userStorage.getAll();
+        Collection<User> users = userStorage.getAll();
+        for (User user: users) {
+            setUsersFriends(user);
+        }
+        log.info("Пользователи успешно переданы");
+        return users;
     }
 
     public User get(Long id) {
         log.info("Попытка получить пользователя с id={}", id);
-        return userStorage.get(id)
+        User user = userStorage.get(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id=%d не найден", id)));
+        setUsersFriends(user);
+        log.info("Пользователь с id = {} успешно передан.", id);
+        return user;
     }
 
     public User create(User user) {
@@ -62,7 +73,9 @@ public class UserService {
             throw new ValidationException("Дата рождения не может быть в будущем.");
         }
         get(newUser.getId());
-        return userStorage.update(newUser);
+        User user = userStorage.update(newUser);
+        log.info("Пользователь с id = {} успешно обновлён", user.getId());
+        return user;
     }
 
     public void delete(Long id) {
@@ -92,6 +105,7 @@ public class UserService {
     public Collection<User> getFriends(Long id) {
         log.info("Получаем всех друзей у пользователя id={}", id);
         return get(id).getFriends().stream().map(this::get).collect(Collectors.toList());
+
     }
 
     public Collection<User> getCommonFriends(Long id, Long otherId) {
@@ -101,4 +115,10 @@ public class UserService {
                 .map(this::get).collect(Collectors.toList());
 
     }
+
+    private void setUsersFriends(User user) {
+        user.setFriends(new HashSet<>(friendsService.getUsersFriendsById(user.getId())));
+    }
+
+
 }
