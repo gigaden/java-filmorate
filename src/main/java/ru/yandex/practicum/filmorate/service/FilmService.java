@@ -121,10 +121,10 @@ public class FilmService {
 
     public Collection<Film> getPopularFilms(int count) {
         log.info("Запрос на получение популярных фильмов.");
-        if (count > filmStorage.getAll().size()) {
-            count = filmStorage.getAll().size();
+        if (count > getAll().size()) {
+            count = getAll().size();
         }
-        List<Film> popularFilms = filmStorage.getAll().stream()
+        List<Film> popularFilms = getAll().stream()
                 .sorted(Comparator.comparingInt((Film el) -> el.getLikes().size()).reversed()).limit(count)
                 .collect(Collectors.toList());
         log.info("Коллекция популярных фильмов успешно отправлена.");
