@@ -103,8 +103,7 @@ public class FilmService {
     public void addLike(Long id, Long userId) {
         log.info("Попытка поставить лайк фильму с id={} юзером с id={}.", id, userId);
         Film film = get(id);
-        userService.get(userId); // -! Не забыдь проверить получение юзера из БД
-        // film.getLikes().add(userId);
+        userService.get(userId);
         likeService.addLike(id, userId);
         log.info("Фильму с id={} поставил лайк юзер с id={}.", id, userId);
 
