@@ -19,4 +19,12 @@ public class FriendsService {
     public Collection<Long> getUsersFriendsById (Long id) {
         return friendsStorage.findFriendsByUserId(id);
     }
+
+    public void addFriend(long userId, long friendId, boolean friendship) {
+        friendsStorage.addFriend(userId, friendId, friendship);
+    }
+
+    public void updateFriendship(long friendId, long id, boolean friendship) {
+        friendsStorage.updateFriendship(friendId, id, friendship);
+    }
 }

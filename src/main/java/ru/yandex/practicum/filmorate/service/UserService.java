@@ -88,8 +88,12 @@ public class UserService {
         log.info("Добавляем пользователю id={} друга id={}", id, friendId);
         User user = get(id);
         User friend = get(friendId);
-        user.getFriends().add(friendId);
-        friend.getFriends().add(id);
+        boolean friendship = false;
+        if (user.getFriends() != null && user.getFriends().contains(friendId)) {
+            friendship = true;
+            friendsService.updateFriendship(id, friendId, friendship);
+        }
+        friendsService.addFriend(friendId, id, friendship);
         log.info("Добавили пользователю id={} друга id={}", id, friendId);
     }
 

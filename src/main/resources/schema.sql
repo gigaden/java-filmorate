@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS friends (
     user_id BIGINT,
     friend_id BIGINT,
-    friendship BOOLEAN,
+    friendship BOOLEAN default false,
     constraint fk_user_users foreign key (user_id) references PUBLIC.users (id) on delete cascade,
     constraint fk_friend_users foreign key (friend_id) references PUBLIC.users (id) on delete cascade
 );

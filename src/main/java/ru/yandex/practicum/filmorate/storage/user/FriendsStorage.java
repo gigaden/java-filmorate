@@ -12,7 +12,11 @@ import java.util.Collection;
 public class FriendsStorage extends BaseDbStorage<User> {
 
     private static final String FIND_ALL_FRIENDS_BY_USERS_ID = "SELECT friend_id FROM friends" +
-            " WHERE user_id = ? AND friendship is TRUE";
+            " WHERE user_id = ?";
+    private static final String ADD_FRIEND_QUERY = "INSERT INTO friends(user_id,friend_id,friendship)" +
+            "VALUES (?,?,?)";
+    private static final String UPDATE_FRIENDSHIP = "UPDATE friends SET friendship = ?" +
+            "WHERE user_id = ? AND friend_id = ?";
 
     public FriendsStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
@@ -20,6 +24,17 @@ public class FriendsStorage extends BaseDbStorage<User> {
 
     public Collection<Long> findFriendsByUserId(long id) {
         return jdbc.queryForList(FIND_ALL_FRIENDS_BY_USERS_ID, Long.class, id);
+    }
+
+    public void addFriend(long userId, long friendId, boolean friendship) {
+        add(ADD_FRIEND_QUERY, userId, friendId, friendship);
+    }
+
+    public void updateFriendship(long userId, long friendId, boolean friendship) {
+        update(UPDATE_FRIENDSHIP,
+                friendship,
+                userId,
+                friendId);
     }
 
 
