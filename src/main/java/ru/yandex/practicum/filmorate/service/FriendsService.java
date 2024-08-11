@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.FriendsStorage;
 
 import java.util.Collection;
@@ -26,5 +27,13 @@ public class FriendsService {
 
     public void updateFriendship(long friendId, long id, boolean friendship) {
         friendsStorage.updateFriendship(friendId, id, friendship);
+    }
+
+    public void deleteFriend(long userId, long friendId) {
+        friendsStorage.deleteFriend(userId, friendId);
+    }
+
+    public Collection<User> getAllFriends(long id) {
+        return friendsStorage.getAllFriends(id);
     }
 }

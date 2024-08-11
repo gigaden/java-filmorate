@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.HasNoFriendException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
@@ -13,6 +14,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,11 +86,15 @@ public class UserService {
         userStorage.delete(id);
     }
 
-    public void addFriend(Long id, Long friendId) {
+    public void addFriend(long id, long friendId) {
         log.info("Добавляем пользователю id={} друга id={}", id, friendId);
         User user = get(id);
         User friend = get(friendId);
         boolean friendship = false;
+        if (id == friendId) {
+            throw new NotFoundException("Нельзя добавить в друзья самого себя.");
+        }
+
         if (user.getFriends() != null && user.getFriends().contains(friendId)) {
             friendship = true;
             friendsService.updateFriendship(id, friendId, friendship);
@@ -101,22 +107,30 @@ public class UserService {
         log.info("Удаляем у пользователя id={} друга id={}", id, friendId);
         User user = get(id);
         User friend = get(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(id);
-        log.info("Удалили у пользователя id={} друга id={}", id, friendId);
+        if (!user.getFriends().contains(friendId)) {
+            log.warn("У пользователя с id = {} нет в друзьях id = {}", id, friendId);
+            throw new HasNoFriendException("У пользователя нет такого друга.");
+        }
+        friendsService.deleteFriend(id, friendId);
+        log.info("Удалили у пользователя id = {} друга id = {}", id, friendId);
     }
 
     public Collection<User> getFriends(Long id) {
-        log.info("Получаем всех друзей у пользователя id={}", id);
-        return get(id).getFriends().stream().map(this::get).collect(Collectors.toList());
-
+        log.info("Получаем всех друзей у пользователя id = {}", id);
+        get(id);
+        Collection<User> friends = friendsService.getAllFriends(id).stream()
+                .peek(this::setUsersFriends).collect(Collectors.toList());
+        log.info("Коллекция всех друзей пользователя id = {} передана", id);
+        return friends;
     }
 
     public Collection<User> getCommonFriends(Long id, Long otherId) {
         log.info("Ищем общих друзей у пользователя id={} и друга id={}", id, otherId);
-        return get(id).getFriends().stream()
+        Collection<User> commonFriends = get(id).getFriends().stream()
                 .filter(i -> get(otherId).getFriends().contains(i))
                 .map(this::get).collect(Collectors.toList());
+        log.info("Коллекция общих друзей id = {} с id = {} передана", id, otherId);
+        return commonFriends;
 
     }
 
