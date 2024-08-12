@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.user.UserStorage;
-import ru.yandex.practicum.filmorate.exception.HasNoFriendException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
@@ -106,10 +105,6 @@ public class UserService {
         log.info("Удаляем у пользователя id={} друга id={}", id, friendId);
         User user = get(id);
         User friend = get(friendId);
-        if (!user.getFriends().contains(friendId)) {
-            log.warn("У пользователя с id = {} нет в друзьях id = {}", id, friendId);
-            throw new HasNoFriendException("У пользователя нет такого друга.");
-        }
         friendsService.deleteFriend(id, friendId);
         log.info("Удалили у пользователя id = {} друга id = {}", id, friendId);
     }

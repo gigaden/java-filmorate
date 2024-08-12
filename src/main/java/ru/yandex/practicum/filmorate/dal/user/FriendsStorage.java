@@ -3,8 +3,9 @@ package ru.yandex.practicum.filmorate.dal.user;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.User;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.dal.film.BaseDbStorage;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 
@@ -31,11 +32,13 @@ public class FriendsStorage extends BaseDbStorage<User> {
     }
 
     // Добавляем друга через сводную таблицу
+    @Transactional
     public void addFriend(long userId, long friendId, boolean friendship) {
         add(ADD_FRIEND_QUERY, friendId, userId, friendship);
     }
 
     // Обновляем статус дружбы
+    @Transactional
     public void updateFriendship(long userId, long friendId, boolean friendship) {
         update(UPDATE_FRIENDSHIP,
                 friendship,

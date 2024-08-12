@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dal.film;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -39,6 +40,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     // Добавляем новый фильм
     @Override
+    @Transactional
     public Film create(Film film) {
         long id = insert(INSERT_QUERY,
                 film.getName(), film.getDescription(),
@@ -51,6 +53,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     // Обновляем фильм
     @Override
+    @Transactional
     public Film update(Film film) {
         update(UPDATE_QUERY,
                 film.getName(), film.getDescription(),

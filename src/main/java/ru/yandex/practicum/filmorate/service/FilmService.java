@@ -115,7 +115,6 @@ public class FilmService {
         Film film = get(id);
         userService.get(userId);
         likeService.delLike(id, userId);
-        //film.getLikes().remove(userId);
         log.info("Пользователь с id = {} убрал лайк фильму с id = {}", userId, id);
     }
 

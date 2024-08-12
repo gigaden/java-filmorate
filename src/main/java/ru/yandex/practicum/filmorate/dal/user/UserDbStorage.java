@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dal.user;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.dal.film.BaseDbStorage;
 import ru.yandex.practicum.filmorate.dal.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
@@ -39,6 +40,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
     // Создаём нового пользователя
     @Override
+    @Transactional
     public User create(User user) {
         long id = insert(INSERT_QUERY,
                 user.getEmail(),
@@ -51,6 +53,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
     // Обновляем пользователя
     @Override
+    @Transactional
     public User update(User user) {
         update(UPDATE_QUERY,
                 user.getEmail(),
