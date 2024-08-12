@@ -4,17 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.user.UserStorage;
 import ru.yandex.practicum.filmorate.exception.HasNoFriendException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +34,7 @@ public class UserService {
     public Collection<User> getAll() {
         log.info("Получаем коллекцию всех пользователей.");
         Collection<User> users = userStorage.getAll();
-        for (User user: users) {
+        for (User user : users) {
             setUsersFriends(user);
         }
         log.info("Пользователи успешно переданы");

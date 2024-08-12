@@ -1,15 +1,14 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.dal.film;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dal.FilmRowMapper;
+import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.Optional;
 
 @Repository("filmDbStorage")
-//@RequiredArgsConstructor
 public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM films f JOIN mpas m ON f.mpa = m.id";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
@@ -25,17 +24,20 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     }
 
 
+    // Получаем все фильмы
     @Override
     public Collection<Film> getAll() {
         //return jdbc.query(FIND_ALL_QUERY, new FilmRowMapper());
         return findMany(FIND_ALL_QUERY);
     }
 
+    // Получаем фильм по id
     @Override
     public Optional<Film> get(Long id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }
 
+    // Добавляем новый фильм
     @Override
     public Film create(Film film) {
         long id = insert(INSERT_QUERY,
@@ -47,6 +49,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         return film;
     }
 
+    // Обновляем фильм
     @Override
     public Film update(Film film) {
         update(UPDATE_QUERY,
@@ -58,6 +61,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
         return film;
     }
 
+    // Удаляем фильм
     @Override
     public void delete(Long id) {
         delete(DELETE_BY_ID, id);

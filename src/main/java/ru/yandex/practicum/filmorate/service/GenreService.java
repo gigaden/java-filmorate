@@ -3,13 +3,11 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.film.GenreStorage;
 import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.film.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.film.LikeStorage;
 
 import java.util.Collection;
 import java.util.Set;
@@ -37,7 +35,7 @@ public class GenreService {
     // Получаем список всех жанров
     public Collection<GenreDto> getAll() {
         log.info("Попытка получить коллекцию жанров.");
-        Collection<GenreDto> genreDtos =  genreStorage.getAll()
+        Collection<GenreDto> genreDtos = genreStorage.getAll()
                 .stream().map(GenreMapper::mapToGenreDto).collect(Collectors.toList());
         log.info("Коллекция жанров успешно передана.");
         return genreDtos;

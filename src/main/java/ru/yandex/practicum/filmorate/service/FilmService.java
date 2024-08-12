@@ -4,12 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.film.FilmStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -42,7 +42,7 @@ public class FilmService {
         log.info("Получаем коллекцию всех Фильмов.");
         Collection<Film> films = filmStorage.getAll();
         // Пишем подгружаемые из других таблиц поля в фильм
-        for (Film film: films) {
+        for (Film film : films) {
             setFilmFields(film);
         }
         log.info("Фильмы успешно переданы.  ");
@@ -71,7 +71,7 @@ public class FilmService {
         }
         filmStorage.create(film);
         if (film.getGenres() != null) {
-            genreService.addGenreToFilm(film.getId() ,film.getGenres());
+            genreService.addGenreToFilm(film.getId(), film.getGenres());
         }
         setFilmFields(film);
         log.info("Добавлен новый фильм с id = {}.", film.getId());
@@ -148,7 +148,7 @@ public class FilmService {
         }
         if (film.getGenres() != null) {
             Collection<Integer> genresId = genreService.getAllGenresID();
-            for (Genre genre: film.getGenres()) {
+            for (Genre genre : film.getGenres()) {
                 if (!genresId.contains(genre.getId())) {
                     log.warn("Указан не существующий id жанра: {}", genre.getId());
                     throw new ValidationException("Указан не существующий id жанра.");

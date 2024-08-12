@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.user.FriendsStorage;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.FriendsStorage;
 
 import java.util.Collection;
 
@@ -17,7 +17,7 @@ public class FriendsService {
         this.friendsStorage = friendsStorage;
     }
 
-    public Collection<Long> getUsersFriendsById (Long id) {
+    public Collection<Long> getUsersFriendsById(Long id) {
         return friendsStorage.findFriendsByUserId(id);
     }
 

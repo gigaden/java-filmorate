@@ -1,14 +1,12 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.dal.film;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -64,7 +62,6 @@ public class BaseDbStorage<T> {
             throw new NotFoundException("Не удалось обновить данные");
         }
     }
-
 
 
     protected void add(String query, Object... params) {

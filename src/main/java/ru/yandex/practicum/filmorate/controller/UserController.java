@@ -27,7 +27,7 @@ public class UserController {
         return userService.getAll();
     }
 
-    // Получаем пользователя
+    // Получаем пользователя по id
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public User get(@PathVariable Long id) {

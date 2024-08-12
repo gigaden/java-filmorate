@@ -1,12 +1,9 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.dal.film;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dal.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Collection;
 
@@ -21,14 +18,17 @@ public class LikeStorage extends BaseDbStorage<Film> {
     }
 
 
+    // Получаем id юзеров, лайкнувших фильм
     public Collection<Long> findLikesByFilmId(long id) {
         return jdbc.queryForList(FIND_ALL_LIKES_BY_FILM_ID, Long.class, id);
     }
 
+    // Добавляем фильму лайк через сводную таблицу
     public void addLike(Long id, Long userId) {
         add(INSERT_LIKES_FROM_USERS, id, userId);
     }
 
+    // Удаляем лайк у фильма
     public void delLike(Long id, Long userId) {
         delete(DELETE_BY_ID, id, userId);
     }

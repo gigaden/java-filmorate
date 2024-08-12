@@ -1,8 +1,8 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.dal.film;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dal.MpaRowMapper;
+import ru.yandex.practicum.filmorate.dal.mappers.MpaRowMapper;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.Collection;
@@ -17,10 +17,12 @@ public class MpaStorage extends BaseDbStorage<Mpa> {
         super(jdbc, mapper);
     }
 
+    // Получаем рейтинг по id
     public Optional<Mpa> findById(int id) {
         return findOne(FIND_BY_ID_QUERY, id);
     }
 
+    // Получаем все рейтинги
     public Collection<Mpa> getAll() {
         return findMany(GET_ALL_QUERY);
     }

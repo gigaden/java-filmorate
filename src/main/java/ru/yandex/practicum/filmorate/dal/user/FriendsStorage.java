@@ -1,10 +1,10 @@
-package ru.yandex.practicum.filmorate.storage.user;
+package ru.yandex.practicum.filmorate.dal.user;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.BaseDbStorage;
+import ru.yandex.practicum.filmorate.dal.film.BaseDbStorage;
 
 import java.util.Collection;
 
@@ -25,14 +25,17 @@ public class FriendsStorage extends BaseDbStorage<User> {
         super(jdbc, mapper);
     }
 
+    // Получаем id друзей пользователя
     public Collection<Long> findFriendsByUserId(long id) {
         return jdbc.queryForList(FIND_ALL_FRIENDS_BY_USERS_ID, Long.class, id);
     }
 
+    // Добавляем друга через сводную таблицу
     public void addFriend(long userId, long friendId, boolean friendship) {
         add(ADD_FRIEND_QUERY, friendId, userId, friendship);
     }
 
+    // Обновляем статус дружбы
     public void updateFriendship(long userId, long friendId, boolean friendship) {
         update(UPDATE_FRIENDSHIP,
                 friendship,

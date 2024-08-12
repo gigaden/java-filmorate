@@ -1,8 +1,8 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.dal.film;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dal.GenreRowMapper;
+import ru.yandex.practicum.filmorate.dal.mappers.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Collection;
@@ -21,23 +21,25 @@ public class GenreStorage extends BaseDbStorage<Genre> {
         super(jdbc, mapper);
     }
 
+    // Получаем все жанры фильма по id
     public Collection<Genre> findAllByFilmId(long id) {
         return findMany(FIND_ALL_QUERY_BY_FILM_ID, id);
     }
 
+    // Получаем все возможные жанры в БД
     public Collection<Genre> getAll() {
         return findMany(GET_ALL_QUERY);
     }
 
+    // Получаем жанр по id
     public Optional<Genre> getGenreById(int id) {
         return findOne(GET_GENRE_BY_ID, id);
     }
 
-    public void insertIntoFilmGenre(long film_id, int genre_id) {
-        add(INSERT_FILM_GENRE, film_id, genre_id);
+    // Добавляем фильму жанр, занося данные в сводную таблицу
+    public void insertIntoFilmGenre(long filmId, int genreId) {
+        add(INSERT_FILM_GENRE, filmId, genreId);
     }
-
-
 
 
 }
