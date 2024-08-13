@@ -2,12 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.user.UserStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -19,22 +20,33 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final FriendsService friendsService;
     private final LocalDate validDate = LocalDate.now();
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       FriendsService friendsService) {
         this.userStorage = userStorage;
+        this.friendsService = friendsService;
     }
 
     public Collection<User> getAll() {
         log.info("Получаем коллекцию всех пользователей.");
-        return userStorage.getAll();
+        Collection<User> users = userStorage.getAll();
+        for (User user : users) {
+            setUsersFriends(user);
+        }
+        log.info("Пользователи успешно переданы");
+        return users;
     }
 
     public User get(Long id) {
         log.info("Попытка получить пользователя с id={}", id);
-        return userStorage.get(id)
+        User user = userStorage.get(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь с id=%d не найден", id)));
+        setUsersFriends(user);
+        log.info("Пользователь с id = {} успешно передан.", id);
+        return user;
     }
 
     public User create(User user) {
@@ -61,7 +73,9 @@ public class UserService {
             throw new ValidationException("Дата рождения не может быть в будущем.");
         }
         get(newUser.getId());
-        return userStorage.update(newUser);
+        User user = userStorage.update(newUser);
+        log.info("Пользователь с id = {} успешно обновлён", user.getId());
+        return user;
     }
 
     public void delete(Long id) {
@@ -70,12 +84,20 @@ public class UserService {
         userStorage.delete(id);
     }
 
-    public void addFriend(Long id, Long friendId) {
+    public void addFriend(long id, long friendId) {
         log.info("Добавляем пользователю id={} друга id={}", id, friendId);
         User user = get(id);
         User friend = get(friendId);
-        user.getFriends().add(friendId);
-        friend.getFriends().add(id);
+        boolean friendship = false;
+        if (id == friendId) {
+            throw new NotFoundException("Нельзя добавить в друзья самого себя.");
+        }
+
+        if (user.getFriends() != null && user.getFriends().contains(friendId)) {
+            friendship = true;
+            friendsService.updateFriendship(id, friendId, friendship);
+        }
+        friendsService.addFriend(friendId, id, friendship);
         log.info("Добавили пользователю id={} друга id={}", id, friendId);
     }
 
@@ -83,21 +105,32 @@ public class UserService {
         log.info("Удаляем у пользователя id={} друга id={}", id, friendId);
         User user = get(id);
         User friend = get(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(id);
-        log.info("Удалили у пользователя id={} друга id={}", id, friendId);
+        friendsService.deleteFriend(id, friendId);
+        log.info("Удалили у пользователя id = {} друга id = {}", id, friendId);
     }
 
     public Collection<User> getFriends(Long id) {
-        log.info("Получаем всех друзей у пользователя id={}", id);
-        return get(id).getFriends().stream().map(this::get).collect(Collectors.toList());
+        log.info("Получаем всех друзей у пользователя id = {}", id);
+        get(id);
+        Collection<User> friends = friendsService.getAllFriends(id).stream()
+                .peek(this::setUsersFriends).collect(Collectors.toList());
+        log.info("Коллекция всех друзей пользователя id = {} передана", id);
+        return friends;
     }
 
     public Collection<User> getCommonFriends(Long id, Long otherId) {
         log.info("Ищем общих друзей у пользователя id={} и друга id={}", id, otherId);
-        return get(id).getFriends().stream()
+        Collection<User> commonFriends = get(id).getFriends().stream()
                 .filter(i -> get(otherId).getFriends().contains(i))
                 .map(this::get).collect(Collectors.toList());
+        log.info("Коллекция общих друзей id = {} с id = {} передана", id, otherId);
+        return commonFriends;
 
     }
+
+    private void setUsersFriends(User user) {
+        user.setFriends(new HashSet<>(friendsService.getUsersFriendsById(user.getId())));
+    }
+
+
 }
