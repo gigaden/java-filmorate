@@ -6,15 +6,14 @@ import ru.yandex.practicum.filmorate.model.Film;
 public class FilmMapper {
 
     public static FilmDto mapToFilmDto(Film film) {
-        FilmDto dto = new FilmDto();
-        dto.setId(film.getId());
-        dto.setName(film.getName());
-        dto.setDescription(film.getDescription());
-        dto.setReleaseDate(film.getReleaseDate());
-        dto.setDuration(film.getDuration());
-        dto.setMpa(film.getMpa());
 
-        return dto;
+        return FilmDto.builder().id(film.getId())
+                .name(film.getName())
+                .description(film.getDescription())
+                .releaseDate(film.getReleaseDate())
+                .duration(film.getDuration())
+                .mpa(film.getMpa())
+                .build();
 
     }
 }
