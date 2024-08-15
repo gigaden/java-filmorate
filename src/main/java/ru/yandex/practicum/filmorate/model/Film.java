@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Set;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Film {
 
     private Long id;
@@ -18,9 +20,4 @@ public class Film {
     private Mpa mpa;
     private Set<Genre> genres;
     private Set<Long> likes;
-
-
-    public Film() {
-
-    }
 }

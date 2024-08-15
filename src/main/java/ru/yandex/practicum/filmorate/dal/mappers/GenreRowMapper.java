@@ -11,10 +11,9 @@ import java.sql.SQLException;
 public class GenreRowMapper implements RowMapper<Genre> {
     @Override
     public Genre mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        Genre genre = new Genre();
-        genre.setName(resultSet.getString("name"));
-        genre.setId(resultSet.getInt("id"));
 
-        return genre;
+        return Genre.builder().id(resultSet.getInt("id"))
+                .name(resultSet.getString("name"))
+                .build();
     }
 }
