@@ -76,5 +76,13 @@ public class FilmController {
         return filmService.getPopularFilms(count);
     }
 
+    // Получаем фильмы по названию и по режиссёру
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<Film> getFilmsByParams(@RequestParam String query,
+                                             @RequestParam Collection<String> by) {
+        return filmService.getFilmsByParams(query, by);
+    }
+
 
 }

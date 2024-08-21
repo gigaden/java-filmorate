@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.film.FilmStorage;
+import ru.yandex.practicum.filmorate.dal.film.SearchParams;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
@@ -24,18 +25,20 @@ public class FilmService {
     private final MpaService mpaService;
     private final GenreService genreService;
     private final LikeService likeService;
+    private final DirectorService directorService;
     private final LocalDate releaseDate = LocalDate.of(1895, 12, 28);
     private static final int maxLengthOfDescription = 200;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        UserService userService, MpaService mpaService, GenreService genreService,
-                       LikeService likeService) {
+                       LikeService likeService, DirectorService directorService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.mpaService = mpaService;
         this.genreService = genreService;
         this.likeService = likeService;
+        this.directorService = directorService;
     }
 
     public Collection<Film> getAll() {
@@ -130,6 +133,32 @@ public class FilmService {
         return popularFilms;
     }
 
+    public Collection<Film> getFilmsByParams(String query, Collection<String> by) {
+        log.info("Пробуем получить фильмы со строкой запроса {}", query);
+        List<Film> films = new ArrayList<>();
+        for (String str : by) {
+            switch (SearchParams.valueOf(str)) {
+                case SearchParams.title:
+                    log.info("Ищем в названиях фильмов.");
+                    films.addAll(filmStorage.searchByName(query));
+                break;
+                case SearchParams.director:
+                    log.info("Ищем в именах режиссёров.");
+                    films.addAll(filmStorage.searchByDirector(query));
+                break;
+                default:
+                    log.warn("Неверный параметр для поиска {}", str);
+                    throw new NotFoundException("Не задан параметр для поиска, либо он неверен");
+            }
+        }
+        log.info("Коллекция фильмов по запросу отправлена.");
+        return films.stream()
+                .peek(this::setFilmFields)
+                .sorted(Comparator.comparingInt((Film el) -> el.getLikes().size()).reversed())
+                .collect(Collectors.toList());
+
+    }
+
     // Валидируем поля
     private void checkFields(Film film) {
         if (film.getDescription().length() > maxLengthOfDescription) {
@@ -165,8 +194,8 @@ public class FilmService {
     // Добавляем поля в фильм
     private void setFilmFields(Film film) {
         film.setMpa(mpaService.get(film.getMpa().getId()));
-        //film.setGenres(new HashSet<>(genreService.getAllFilmGenreById(film.getId())));
         film.setGenres(new LinkedHashSet<>(genreService.getAllFilmGenreById(film.getId())));
         film.setLikes(new HashSet<>(likeService.getLikesByFilmId(film.getId())));
+        film.setDirector(new LinkedHashSet<>(directorService.getAllDirectorsByFilmId(film.getId())));
     }
 }
