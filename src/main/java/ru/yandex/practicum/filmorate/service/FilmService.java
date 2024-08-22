@@ -162,6 +162,17 @@ public class FilmService {
         }
     }
 
+    // Возвращаем рекомендации по фильмам для просмотра
+    public Collection<Film> getRecommendedFilms(Long id) {
+        log.info("Пытаемся получить коллекцию рекомендованных фильмов");
+        final Collection<Film> films = filmStorage.getRecommendedFilms(id);
+        for (Film film : films) {
+            setFilmFields(film);
+        }
+        log.info("Рекомендованные фильмы успешно переданы");
+        return films;
+    }
+
     // Добавляем поля в фильм
     private void setFilmFields(Film film) {
         film.setMpa(mpaService.get(film.getMpa().getId()));
