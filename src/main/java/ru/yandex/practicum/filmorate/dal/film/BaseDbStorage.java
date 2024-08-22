@@ -63,7 +63,6 @@ public class BaseDbStorage<T> {
         }
     }
 
-
     protected void add(String query, Object... params) {
         jdbc.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(query);
