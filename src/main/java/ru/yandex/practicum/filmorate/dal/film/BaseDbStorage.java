@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -54,6 +55,10 @@ public class BaseDbStorage<T> {
         } else {
             throw new InternalServerException("Не удалось сохранить данные");
         }
+    }
+
+    protected <T> List<T> findManyInstances(String query, Class<T> type, Object... params) {
+        return jdbc.query(query, new SingleColumnRowMapper<>(type), params);
     }
 
     protected void update(String query, Object... params) {
