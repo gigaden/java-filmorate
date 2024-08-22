@@ -12,7 +12,12 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -118,12 +123,16 @@ public class FilmService {
         log.info("Пользователь с id = {} убрал лайк фильму с id = {}", userId, id);
     }
 
-    public Collection<Film> getPopularFilms(int count) {
+    public Collection<Film> getPopularFilms(int count, Integer genreId, Integer year) {
         log.info("Запрос на получение популярных фильмов.");
         if (count > getAll().size()) {
             count = getAll().size();
         }
         List<Film> popularFilms = getAll().stream()
+                .filter(film -> Objects.isNull(year) || Objects.equals(film.getReleaseDate().getYear(), year))
+                .filter(film -> Objects.isNull(genreId) || film.getGenres()
+                        .stream()
+                        .anyMatch(genre -> Objects.equals(genre.getId(), genreId)))
                 .sorted(Comparator.comparingInt((Film el) -> el.getLikes().size()).reversed()).limit(count)
                 .collect(Collectors.toList());
         log.info("Коллекция популярных фильмов успешно отправлена.");
