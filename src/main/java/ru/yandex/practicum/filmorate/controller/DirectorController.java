@@ -52,7 +52,7 @@ public class DirectorController {
 
     // Обрабатываем запрос на удаление режиссера по id
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
         directorService.delete(id);
     }

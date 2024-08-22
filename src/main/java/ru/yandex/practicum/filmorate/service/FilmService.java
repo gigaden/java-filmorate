@@ -141,7 +141,7 @@ public class FilmService {
         return popularFilms;
     }
 
-    public Collection<Film> getSortedDirectorFilms(Long directorId, String sortBy) {
+    public Collection<Film> getSortedDirectorFilms(Long directorId, List<String> sortBy) {
         Collection<Film> list = filmStorage.getAllFilmsByDirectorId(directorId);
         if (sortBy == null) {
             // Список фильмов определенного режиссера

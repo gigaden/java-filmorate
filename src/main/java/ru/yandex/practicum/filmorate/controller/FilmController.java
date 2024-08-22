@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
@@ -82,7 +83,7 @@ public class FilmController {
     // Получаем список фильмов режиссера, отсортированный по году или лайкам
     @GetMapping("/director/{directorId}")
     public Collection<Film> getFilmsByDirector(@PathVariable("directorId") Long directorId,
-                                               @RequestParam(required = false) String sortBy) {
+                                               @RequestParam(required = false) List<String> sortBy) {
         return filmService.getSortedDirectorFilms(directorId, sortBy);
     }
 }

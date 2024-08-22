@@ -16,6 +16,7 @@ public class DirectorStorage extends BaseDbStorage<Director> {
             "WHERE film_id = ? ORDER BY d.id";
     private static final String GET_ALL_QUERY = "SELECT * FROM directors ORDER BY id";
     private static final String INSERT_FILM_DIRECTOR = "INSERT INTO film_director (film_id, director_id) VALUES(?,?)";
+    private static final String INSERT_DIRECTOR = "INSERT INTO directors (name) VALUES(?)";
     private static final String GET_DIRECTOR_BY_ID = "SELECT * FROM directors WHERE id = ?";
     private static final String UPDATE_DIRECTOR_QUERY = "UPDATE directors SET name = ? WHERE id = ?";
     private static final String DELETE_DIRECTOR_BY_ID = "DELETE FROM directors WHERE id = ?";
@@ -53,7 +54,7 @@ public class DirectorStorage extends BaseDbStorage<Director> {
 
     //создаем режиссера
     public Director create(Director director) {
-         long id = insert(INSERT_FILM_DIRECTOR,
+         long id = insert(INSERT_DIRECTOR,
                 director.getName());
         director.setId(id);
         return director;
