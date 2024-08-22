@@ -141,22 +141,25 @@ public class FilmService {
         return popularFilms;
     }
 
+    // Получаем фильмы режиссёра, отсортированные по параметрам.
     public Collection<Film> getSortedDirectorFilms(Long directorId, List<String> sortBy) {
-        Collection<Film> list = filmStorage.getAllFilmsByDirectorId(directorId);
-        if (sortBy == null) {
-            // Список фильмов определенного режиссера
-            return list;
-            // Список фильмов определенного режиссера, отсортированный по году выхода
-        } else if (sortBy.equalsIgnoreCase("year")) {
-            return list.stream()
-                    .sorted(Comparator.comparing(Film::getReleaseDate))
-                    .collect(Collectors.toList());
-        } else {
-            // Сортировка по лайкам
-            return list.stream()
-                    .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
-                    .collect(Collectors.toList());
+        log.info("Запрос на получение отсортированных фильмов режиссёра с id = {}", directorId);
+        Collection<Film> films = filmStorage.getAllFilmsByDirectorId(directorId).stream()
+                .peek(this::setFilmFields).collect(Collectors.toList());
+
+        for (String str : sortBy) {
+            films = switch (str) {
+                case "year" -> films.stream()
+                        .sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
+                case "likes" -> films.stream()
+                        .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
+                        .collect(Collectors.toList());
+                default -> films;
+            };
         }
+        log.info("Коллекция фильмов режиссёра c id = {} успешно отправлена.", directorId);
+        return films;
+
     }
 
     // Валидируем поля
@@ -205,7 +208,6 @@ public class FilmService {
     // Добавляем поля в фильм
     private void setFilmFields(Film film) {
         film.setMpa(mpaService.get(film.getMpa().getId()));
-        //film.setGenres(new HashSet<>(genreService.getAllFilmGenreById(film.getId())));
         film.setGenres(new LinkedHashSet<>(genreService.getAllFilmGenreById(film.getId())));
         film.setLikes(new HashSet<>(likeService.getLikesByFilmId(film.getId())));
         film.setDirectors(new HashSet<>(directorService.getAllDirectorsByFilmId(film.getId())));
