@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dal.BaseDbStorage;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.ArrayList;
@@ -15,37 +16,49 @@ import java.util.Optional;
 @Repository
 public class ReviewDbStorage extends BaseDbStorage<Review> {
     private static final String INSERT_QUERY = """
-            INSERT INTO reviews(content, is_positive, user_id, film_id) VALUES(?, ?, ?, ?)
+            INSERT INTO reviews(content, is_positive, user_id, film_id)
+            VALUES(?, ?, ?, ?)
             """;
     private static final String UPDATE_QUERY = """
-            UPDATE reviews SET content = ?, is_positive = ?, user_id = ?, film_id = ? WHERE review_id = ?
+            UPDATE reviews SET content = ?, is_positive = ?, user_id = ?, film_id = ?
+            WHERE review_id = ?
             """;
     private static final String FIND_BY_ID_QUERY = """
-            SELECT * FROM reviews WHERE review_id = ?
+            SELECT * FROM reviews
+            WHERE review_id = ?
             """;
     private static final String DELETE_BY_ID = """
-            DELETE FROM reviews WHERE review_id = ?
+            DELETE FROM reviews
+            WHERE review_id = ?
             """;
     private static final String FIND_ALL_QUERY = """
-            SELECT * FROM reviews LIMIT ?
+            SELECT * FROM reviews
+            LIMIT ?
             """;
     private static final String FIND_BY_ID_FILM_QUERY = """
-            SELECT * FROM reviews WHERE film_id = ? LIMIT ?
+            SELECT * FROM reviews
+            WHERE film_id = ?
+            LIMIT ?
             """;
     private static final String INSERT_LIKE_QUERY = """
-            INSERT INTO useful(review_id, user_id, useful) VALUES(?, ?, ?)
+            INSERT INTO useful(review_id, user_id, useful)
+            VALUES(?, ?, ?)
             """;
     private static final String DELETE_LIKE_BY_ID = """
-            DELETE FROM useful WHERE review_id = ? AND user_id = ? AND useful = ?
+            DELETE FROM useful
+            WHERE review_id = ? AND user_id = ? AND useful = ?
             """;
     private static final String DELETE_LIKE_BY_ID_NO_USEFUL = """
-            DELETE FROM useful WHERE review_id = ? AND user_id = ?
+            DELETE FROM useful
+            WHERE review_id = ? AND user_id = ?
             """;
     private static final String FIND_LIKE_COUNT_QUERY = """
-            SELECT review_id FROM useful WHERE review_id = ? AND useful = true
+            SELECT review_id FROM useful
+            WHERE review_id = ? AND useful = true
             """;
     private static final String FIND_DISLIKE_COUNT_QUERY = """
-            SELECT review_id FROM useful WHERE review_id = ? AND useful = false
+            SELECT review_id FROM useful
+            WHERE review_id = ? AND useful = false
             """;
 
     public ReviewDbStorage(JdbcTemplate jdbc, RowMapper<Review> mapper) {
