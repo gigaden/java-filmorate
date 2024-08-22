@@ -4,7 +4,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+
 
 import java.util.Collection;
 import java.util.Optional;
@@ -19,7 +21,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?," +
             " releaseDate = ?, duration = ?, mpa = ? WHERE id = ?";
     private static final String DELETE_BY_ID = "DELETE from films WHERE id = ?";
-
+    private static final String FIND_FILMS_BY_DIRECTOR_ID = "SELECT * FROM film_director WHERE director_id = ?";
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);
     }
@@ -68,5 +70,10 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public void delete(Long id) {
         delete(DELETE_BY_ID, id);
+    }
+
+    // Получаем список фильмов по id режиссера
+    public Collection<Film> getAllFilmsByDirectorId(Long id) {
+        return findMany(FIND_FILMS_BY_DIRECTOR_ID, id);
     }
 }

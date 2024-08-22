@@ -17,5 +17,5 @@ public interface FilmStorage {
 
     void delete(Long id);
 
-
+    Collection<Film> getAllFilmsByDirectorId(Long directorId);
 }

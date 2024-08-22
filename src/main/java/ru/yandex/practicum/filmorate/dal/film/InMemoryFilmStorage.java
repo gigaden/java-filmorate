@@ -52,6 +52,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.info("Фильм с id={} удалён.", id);
     }
 
+    @Override
+    public Collection<Film> getAllFilmsByDirectorId(Long directorId) {
+        return null;
+    }
+
     // Метод для генерации идентификатора нового поста
     private long getNextId() {
         long currentMaxId = films.keySet()
