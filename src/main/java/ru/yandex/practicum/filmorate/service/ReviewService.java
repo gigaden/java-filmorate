@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.film.ReviewDbStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,12 +19,15 @@ public class ReviewService {
     private final ReviewDbStorage reviewDbStorage;
     private final FilmService filmService;
     private final UserService userService;
+    private final EventService eventService;
 
     @Autowired
-    public ReviewService(ReviewDbStorage reviewDbStorage, FilmService filmService, UserService userService) {
+    public ReviewService(ReviewDbStorage reviewDbStorage, FilmService filmService, UserService userService,
+                         EventService eventService) {
         this.reviewDbStorage = reviewDbStorage;
         this.filmService = filmService;
         this.userService = userService;
+        this.eventService = eventService;
     }
 
     public Review create(Review review) {
@@ -30,6 +35,7 @@ public class ReviewService {
         userService.get(review.getUserId());
         filmService.get(review.getFilmId());
         reviewDbStorage.create(review);
+        eventService.createEvent(review.getUserId(), EventType.REVIEW, Operation.ADD, review.getReviewId());
         log.info("Отзыв успешно добавлен {}", get(review.getReviewId()));
         return review;
     }
@@ -39,6 +45,7 @@ public class ReviewService {
         userService.get(review.getUserId());
         filmService.get(review.getFilmId());
         reviewDbStorage.update(review);
+        eventService.createEvent(review.getUserId(), EventType.REVIEW, Operation.UPDATE, review.getReviewId());
         log.info("Отзыв успешно обновлен {}", review);
         return review;
     }
@@ -54,7 +61,8 @@ public class ReviewService {
 
     public void delete(Long reviewId) {
         log.info("Попытка удалить отзыв {}", get(reviewId));
-        get(reviewId);
+        Long id = get(reviewId).getUserId();
+        eventService.createEvent(id, EventType.REVIEW, Operation.REMOVE, reviewId);
         reviewDbStorage.delete(reviewId);
         log.info("Отзыв с id: {} успешно удален", reviewId);
     }
