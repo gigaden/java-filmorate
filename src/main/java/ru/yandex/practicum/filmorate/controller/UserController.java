@@ -4,20 +4,34 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    private final EventService eventService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService,EventService eventService) {
         this.userService = userService;
+        this.eventService = eventService;
+    }
+
+    /**
+     * Получение записей событий из базы данных.
+     */
+    @GetMapping("/{userId}/feed")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Event> getEvent(@PathVariable Long userId) {
+        return eventService.findEventsByUserId(userId);
     }
 
     // Получаем всех пользователей
