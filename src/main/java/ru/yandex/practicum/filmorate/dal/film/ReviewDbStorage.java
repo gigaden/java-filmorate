@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dal.film;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Repository
 public class ReviewDbStorage extends BaseDbStorage<Review> {
     private static final String INSERT_QUERY = """
@@ -51,6 +53,7 @@ public class ReviewDbStorage extends BaseDbStorage<Review> {
     }
 
     public Review create(Review review) {
+        log.info("Создания отзыва в базе данных: {}", review);
         long reviewId = insert(INSERT_QUERY,
                 review.getContent(),
                 review.getIsPositive(),
@@ -58,16 +61,19 @@ public class ReviewDbStorage extends BaseDbStorage<Review> {
                 review.getFilmId());
         review.setReviewId(reviewId);
         review.setUseful(0);
+        log.info("Отзыв в базе данных создан: {}", get(reviewId));
         return review;
     }
 
     public Review update(Review review) {
+        log.info("Попытка обновить отзыв в базе данных: {}", get(review.getReviewId()));
         update(UPDATE_QUERY,
                 review.getContent(),
                 review.getIsPositive(),
                 review.getUserId(),
                 review.getFilmId(),
                 review.getReviewId());
+        log.info("Отзыв в базе данных обнавлен: {}", review);
         return review;
     }
 
@@ -76,20 +82,30 @@ public class ReviewDbStorage extends BaseDbStorage<Review> {
     }
 
     public void delete(Long reviewId) {
+        log.info("Попытка удалить отзыв из базы данных: {}", get(reviewId));
         delete(DELETE_BY_ID, reviewId);
+        log.info("Отзыв с id: {} успешно удален из базы данных", reviewId);
     }
 
     public Collection<Review> getAll(int count) {
-        return findMany(FIND_ALL_QUERY, count);
+        log.info("Попытка получения коллекции отзывов из базы данных, count: {}", count);
+        Collection<Review> reviewCollection = findMany(FIND_ALL_QUERY, count);
+        log.info("Коллекция отзывов из базы данных успешно получена");
+        return reviewCollection;
     }
 
     public Collection<Review> getAllOfFilm(Long filmId, int count) {
-        return findMany(FIND_BY_ID_FILM_QUERY, filmId, count);
+        log.info("Попытка получения коллекции отзывов фильма из базы данных, filmId: {}, count: {}", filmId, count);
+        Collection<Review> reviewCollection = findMany(FIND_BY_ID_FILM_QUERY, filmId, count);
+        log.info("Коллекция отзывов фильма успешно получена из базы данных");
+        return reviewCollection;
     }
 
     public void createUseful(Long reviewId, Long userId, boolean useful) {
+        log.info("Добавление лака/дизлайка в базе данных reviewId: {}, userId: {}, useful: {}", reviewId, userId, useful);
         delete(DELETE_LIKE_BY_ID_NO_USEFUL, reviewId, userId);
         add(INSERT_LIKE_QUERY, reviewId, userId, useful);
+        log.info("Лайк/дизлайк успешно добавлен reviewId: {}, userId: {}, useful: {}", reviewId, userId, useful);
     }
 
     public void removeUseful(Long reviewId, Long userId, boolean useful) {

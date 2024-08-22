@@ -26,20 +26,20 @@ public class ReviewService {
     }
 
     public Review create(Review review) {
-        log.info("Попытка создать отзыв");
+        log.info("Попытка создать отзыв {}", review);
         userService.get(review.getUserId());
         filmService.get(review.getFilmId());
         reviewDbStorage.create(review);
-        log.info("Отзыв с id: {} успешно добавлен", review.getReviewId());
+        log.info("Отзыв успешно добавлен {}", get(review.getReviewId()));
         return review;
     }
 
     public Review update(Review review) {
-        log.info("Попытка обновить отзыв");
+        log.info("Попытка обновить отзыв {}", get(review.getReviewId()));
         userService.get(review.getUserId());
         filmService.get(review.getFilmId());
         reviewDbStorage.update(review);
-        log.info("Отзыв с id: {} успешно обновлен", review.getReviewId());
+        log.info("Отзыв успешно обновлен {}", review);
         return review;
     }
 
@@ -48,38 +48,41 @@ public class ReviewService {
         Review review = reviewDbStorage.get(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыв c id:" + reviewId + " не найден"));
         review.setUseful(reviewDbStorage.findUsefulCount(review.getReviewId()));
-        log.info("Отзыв с id: {} успешно получен", review.getReviewId());
+        log.info("Отзыв успешно получен {}", review);
         return review;
     }
 
     public void delete(Long reviewId) {
-        log.info("Попытка удалить отзыв с id: {}", reviewId);
+        log.info("Попытка удалить отзыв {}", get(reviewId));
         get(reviewId);
         reviewDbStorage.delete(reviewId);
         log.info("Отзыв с id: {} успешно удален", reviewId);
     }
 
     public Collection<Review> getAllOfParam(Long filmId, int count) {
-        log.info("Попытка получить фильмы");
         if (filmId > 0) {
             log.info("Попытка получить отзывы фильма filmId: {}, count: {}", filmId, count);
-            return setUseful(reviewDbStorage.getAllOfFilm(filmId, count));
+            Collection<Review> reviewCollection = setUseful(reviewDbStorage.getAllOfFilm(filmId, count));
+            log.info("Отзывы фильма получены filmId: {}, count: {}", filmId, count);
+            return reviewCollection;
         } else {
             log.info("Попытка получить отзывы всех фильмов count: {}", count);
-            return setUseful(reviewDbStorage.getAll(count));
+            Collection<Review> reviewCollection = setUseful(reviewDbStorage.getAll(count));
+            log.info("Отзывы всех фильмов получены count: {}", count);
+            return reviewCollection;
         }
     }
 
     public void createUseful(Long reviewId, Long userId, boolean useful) {
-        log.info("Попытка создать оценку отзыву");
+        log.info("Попытка создать оценку отзыву {}", get(reviewId));
         reviewDbStorage.createUseful(reviewId, userId, useful);
-        log.info("Оцунка успешно создана");
+        log.info("Оцунка успешно создана {}", get(reviewId));
     }
 
     public void removeUseful(Long reviewId, Long userId, boolean useful) {
-        log.info("Попытка удалить оценку");
+        log.info("Попытка удалить оценку {}", get(reviewId));
         reviewDbStorage.removeUseful(reviewId, userId, useful);
-        log.info("Оцунка успешно удалена");
+        log.info("Оцунка c id: {} успешно удалена", reviewId);
     }
 
     public List<Review> setUseful(Collection<Review> reviews) {
