@@ -1,15 +1,17 @@
 package ru.yandex.practicum.filmorate.dal.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.dal.film.BaseDbStorage;
+import ru.yandex.practicum.filmorate.dal.BaseDbStorage;
 import ru.yandex.practicum.filmorate.dal.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.Optional;
 
+@Slf4j
 @Repository("userDbStorage")
 public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM users";
@@ -21,10 +23,10 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
             " name = ?, birthday = ? WHERE id = ?";
     private static final String DELETE_BY_ID = "DELETE from users WHERE id = ?";
 
+
     public UserDbStorage(JdbcTemplate jdbc, UserRowMapper mapper) {
         super(jdbc, mapper);
     }
-
 
     // Получаем всех пользователей
     @Override
@@ -42,12 +44,14 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     @Override
     @Transactional
     public User create(User user) {
+        log.info("Попытка создать пользователя {} ", user);
         long id = insert(INSERT_QUERY,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
                 user.getBirthday());
         user.setId(id);
+        log.info("Создан пользователь {} ", user);
         return user;
     }
 

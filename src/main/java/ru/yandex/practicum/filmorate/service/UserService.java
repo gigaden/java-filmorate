@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -22,12 +24,14 @@ public class UserService {
     private final UserStorage userStorage;
     private final FriendsService friendsService;
     private final LocalDate validDate = LocalDate.now();
+    private final EventService eventService;
 
     @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
-                       FriendsService friendsService) {
+                       FriendsService friendsService, EventService eventService) {
         this.userStorage = userStorage;
         this.friendsService = friendsService;
+        this.eventService = eventService;
     }
 
     public Collection<User> getAll() {
@@ -99,6 +103,7 @@ public class UserService {
         }
         friendsService.addFriend(friendId, id, friendship);
         log.info("Добавили пользователю id={} друга id={}", id, friendId);
+        eventService.createEvent(id, EventType.FRIEND, Operation.ADD, friendId);
     }
 
     public void delFriend(Long id, Long friendId) {
@@ -107,6 +112,7 @@ public class UserService {
         User friend = get(friendId);
         friendsService.deleteFriend(id, friendId);
         log.info("Удалили у пользователя id = {} друга id = {}", id, friendId);
+        eventService.createEvent(id, EventType.FRIEND, Operation.REMOVE, friendId);
     }
 
     public Collection<User> getFriends(Long id) {
@@ -131,6 +137,5 @@ public class UserService {
     private void setUsersFriends(User user) {
         user.setFriends(new HashSet<>(friendsService.getUsersFriendsById(user.getId())));
     }
-
 
 }
