@@ -45,7 +45,8 @@ public class ReviewService {
 
     public Review get(Long reviewId) {
         log.info("Попытка получить отзыв по id: {}", reviewId);
-        Review review = reviewDbStorage.get(reviewId).orElseThrow(() -> new NotFoundException("Отзыв c id:" + reviewId + " не найден"));
+        Review review = reviewDbStorage.get(reviewId)
+                .orElseThrow(() -> new NotFoundException("Отзыв c id:" + reviewId + " не найден"));
         review.setUseful(reviewDbStorage.findUsefulCount(review.getReviewId()));
         log.info("Отзыв с id: {} успешно получен", review.getReviewId());
         return review;
