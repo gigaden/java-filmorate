@@ -105,7 +105,7 @@ public class FilmService {
 
     public void addLike(Long id, Long userId) {
         log.info("Попытка поставить лайк фильму с id={} юзером с id={}.", id, userId);
-        Film film = get(id);
+        get(id);
         userService.get(userId);
         likeService.addLike(id, userId);
         eventService.createEvent(userId, EventType.LIKE, Operation.ADD, id);
@@ -114,7 +114,7 @@ public class FilmService {
 
     public void deleteLike(Long id, Long userId) {
         log.info("Попытка убрать лайк фильму с id={} юзером с id={}.", id, userId);
-        Film film = get(id);
+        get(id);
         userService.get(userId);
         likeService.delLike(id, userId);
         eventService.createEvent(userId, EventType.LIKE, Operation.REMOVE, id);

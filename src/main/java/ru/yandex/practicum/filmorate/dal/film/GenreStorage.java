@@ -11,9 +11,11 @@ import java.util.Optional;
 
 @Repository("genreStorage")
 public class GenreStorage extends BaseDbStorage<Genre> {
-    private static final String FIND_ALL_QUERY_BY_FILM_ID = "SELECT g.id AS id, g.name AS name FROM genres g\n" +
-            "JOIN film_genre fg ON g.id = fg.genre_id\n" +
-            "WHERE film_id = ? ORDER BY g.id";
+    private static final String FIND_ALL_QUERY_BY_FILM_ID = """
+            SELECT g.id AS id, g.name AS name FROM genres g
+            JOIN film_genre fg ON g.id = fg.genre_id
+            WHERE film_id = ? ORDER BY g.id
+            """;
     private static final String GET_ALL_QUERY = "SELECT * FROM genres ORDER BY id";
     private static final String INSERT_FILM_GENRE = "INSERT INTO film_genre (film_id, genre_id) VALUES(?,?)";
     private static final String GET_GENRE_BY_ID = "SELECT * FROM genres WHERE id = ?";

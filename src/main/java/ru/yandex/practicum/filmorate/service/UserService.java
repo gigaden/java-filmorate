@@ -91,7 +91,7 @@ public class UserService {
     public void addFriend(long id, long friendId) {
         log.info("Добавляем пользователю id={} друга id={}", id, friendId);
         User user = get(id);
-        User friend = get(friendId);
+        get(friendId);
         boolean friendship = false;
         if (id == friendId) {
             throw new NotFoundException("Нельзя добавить в друзья самого себя.");
@@ -108,8 +108,8 @@ public class UserService {
 
     public void delFriend(Long id, Long friendId) {
         log.info("Удаляем у пользователя id={} друга id={}", id, friendId);
-        User user = get(id);
-        User friend = get(friendId);
+        get(id);
+        get(friendId);
         friendsService.deleteFriend(id, friendId);
         log.info("Удалили у пользователя id = {} друга id = {}", id, friendId);
         eventService.createEvent(id, EventType.FRIEND, Operation.REMOVE, friendId);
