@@ -1,13 +1,24 @@
-drop table EVENTS;
-drop table FILM_GENRE;
-drop table FRIENDS;
-drop table GENRES;
-drop table LIKES;
-drop table USEFUL;
-drop table REVIEWS;
-drop table FILMS;
-drop table MPAS;
-drop table USERS;
+drop table if exists EVENTS cascade;
+
+drop table if exists FILM_GENRE cascade;
+
+drop table if exists FRIENDS cascade;
+
+drop table if exists GENRES cascade;
+
+drop table if exists LIKES cascade;
+
+drop table if exists USEFUL cascade;
+
+drop table if exists REVIEWS cascade;
+
+drop table if exists FILMS cascade;
+
+drop table if exists MPAS cascade;
+
+drop table if exists USERS cascade;
+
+
 
 CREATE TABLE IF NOT EXISTS mpas
 (
