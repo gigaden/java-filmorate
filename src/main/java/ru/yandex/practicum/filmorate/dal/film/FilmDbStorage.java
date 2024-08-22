@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dal.film;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.filmorate.dal.BaseDbStorage;
 import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -23,7 +24,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);
     }
-
 
     // Получаем все фильмы
     @Override

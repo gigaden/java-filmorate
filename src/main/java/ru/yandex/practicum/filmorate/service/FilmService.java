@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -24,18 +26,20 @@ public class FilmService {
     private final MpaService mpaService;
     private final GenreService genreService;
     private final LikeService likeService;
+    private final EventService eventService;
     private final LocalDate releaseDate = LocalDate.of(1895, 12, 28);
     private static final int maxLengthOfDescription = 200;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        UserService userService, MpaService mpaService, GenreService genreService,
-                       LikeService likeService) {
+                       LikeService likeService, EventService eventService) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.mpaService = mpaService;
         this.genreService = genreService;
         this.likeService = likeService;
+        this.eventService = eventService;
     }
 
     public Collection<Film> getAll() {
@@ -77,7 +81,6 @@ public class FilmService {
         log.info("Добавлен новый фильм с id = {}.", film.getId());
 
         return film;
-
     }
 
     public Film update(Film newFilm) {
@@ -105,9 +108,8 @@ public class FilmService {
         Film film = get(id);
         userService.get(userId);
         likeService.addLike(id, userId);
+        eventService.createEvent(userId, EventType.LIKE, Operation.ADD, id);
         log.info("Фильму с id={} поставил лайк юзер с id={}.", id, userId);
-
-
     }
 
     public void deleteLike(Long id, Long userId) {
@@ -115,6 +117,7 @@ public class FilmService {
         Film film = get(id);
         userService.get(userId);
         likeService.delLike(id, userId);
+        eventService.createEvent(userId, EventType.LIKE, Operation.REMOVE, id);
         log.info("Пользователь с id = {} убрал лайк фильму с id = {}", userId, id);
     }
 
