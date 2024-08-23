@@ -49,10 +49,9 @@ public class FilmController {
     }
 
     // Удаляем фильм по id
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void delete(@PathVariable Long id) {
-        filmService.delete(id);
+    @DeleteMapping("/{filmId}")
+    public void delete(@PathVariable Long filmId) {
+        filmService.delete(filmId);
     }
 
     // Пользователь ставит лайк фильму
