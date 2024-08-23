@@ -57,7 +57,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
-    // Метод для генерации идентификатора нового поста
+    // Метод для генерации идентификатора
     private long getNextId() {
         long currentMaxId = films.keySet()
                 .stream()

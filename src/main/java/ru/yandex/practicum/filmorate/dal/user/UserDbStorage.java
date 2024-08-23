@@ -25,7 +25,6 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
         super(jdbc, mapper);
     }
 
-
     // Получаем всех пользователей
     @Override
     public Collection<User> getAll() {

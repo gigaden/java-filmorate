@@ -53,6 +53,4 @@ public class FriendsStorage extends BaseDbStorage<User> {
     public Collection<User> getAllFriends(long id) {
         return findMany(GET_ALL_USERS_FRIENDS, id);
     }
-
-
 }

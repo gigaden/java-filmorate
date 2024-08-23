@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.film.DirectorStorage;
-import ru.yandex.practicum.filmorate.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
 
@@ -36,27 +34,28 @@ public class DirectorService {
     }
 
     // Получаем список всех режиссеров
-    public Collection<DirectorDto> getAll() {
+    public Collection<Director> getAll() {
         log.info("Попытка получить коллекцию режиссеров.");
-        Collection<DirectorDto> directorDtos = directorStorage.getAll()
-                .stream().map(DirectorMapper::mapToDirectorDto).collect(Collectors.toList());
-        log.info("Коллекция жанров успешно передана.");
-        return directorDtos;
+        Collection<Director> directors = directorStorage.getAll();
+        log.info("Коллекция режиссеров успешно передана.");
+        return directors;
     }
 
     // Обновляем режиссера
-    public DirectorDto update(Director newDirector) {
-        return DirectorMapper.mapToDirectorDto(directorStorage.update(newDirector));
+    public Director update(Director newDirector) {
+        log.info("Попытка обновить режиссера");
+        getDirectorById(newDirector.getId());
+        return directorStorage.update(newDirector);
     }
 
     // Добавляем режиссера
-    public DirectorDto create(Director director) {
+    public Director create(Director director) {
         log.info("Попытка создать режиссера");
             if (director.getName().isBlank()) {
                 log.warn("Имя режиссера не может быть пустым.");
                 throw new ValidationException("Имя режиссера не может быть пустым.");
             }
-            return DirectorMapper.mapToDirectorDto(directorStorage.create(director));
+            return directorStorage.create(director);
     }
 
     // Получаем список id всех режиссеров

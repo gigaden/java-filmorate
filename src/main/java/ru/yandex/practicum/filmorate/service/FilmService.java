@@ -146,7 +146,6 @@ public class FilmService {
         log.info("Запрос на получение отсортированных фильмов режиссёра с id = {}", directorId);
         Collection<Film> films = filmStorage.getAllFilmsByDirectorId(directorId).stream()
                 .peek(this::setFilmFields).collect(Collectors.toList());
-
         for (String str : sortBy) {
             films = switch (str) {
                 case "year" -> films.stream()

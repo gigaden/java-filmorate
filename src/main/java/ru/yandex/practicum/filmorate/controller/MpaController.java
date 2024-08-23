@@ -32,6 +32,4 @@ public class MpaController {
     public MpaDto get(@PathVariable int id) {
         return mpaService.getDto(id);
     }
-
-
 }

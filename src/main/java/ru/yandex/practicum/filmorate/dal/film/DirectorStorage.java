@@ -54,7 +54,7 @@ public class DirectorStorage extends BaseDbStorage<Director> {
 
     //создаем режиссера
     public Director create(Director director) {
-         long id = insert(INSERT_DIRECTOR,
+        long id = insert(INSERT_DIRECTOR,
                 director.getName());
         director.setId(id);
         return director;
