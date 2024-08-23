@@ -135,8 +135,9 @@ public class FilmService {
 
     public List<Film> getSharedFilms(Long userId, Long friendId) {
         log.info("Попытка получить общие фильмы userId={}, friendId={}.", userId, friendId);
-        List<Film> filmList = getPopularFilms(getAll().size()).stream()
+        List<Film> filmList = getAll().stream()
                 .filter(film -> film.getLikes().contains(friendId) && film.getLikes().contains(userId))
+                .sorted(Comparator.comparingInt((Film el) -> el.getLikes().size()).reversed())
                 .toList();
         log.info("Общие фильмы успешно получены userId={}, friendId={}.", userId, friendId);
         return filmList;
