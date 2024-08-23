@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS reviews
 
 CREATE TABLE IF NOT EXISTS useful
 (
-    review_id INT REFERENCES reviews (review_id),
+    review_id INT REFERENCES reviews (review_id) ON DELETE CASCADE ,
     user_id BIGINT REFERENCES users(id),
     useful BOOLEAN
 );
