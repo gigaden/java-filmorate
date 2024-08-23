@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
 import ru.yandex.practicum.filmorate.model.Director;
 
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;

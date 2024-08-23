@@ -90,6 +90,14 @@ public class FilmController {
         return filmService.getPopularFilms(count, genreId, year);
     }
 
+    // Получаем фильмы по названию и по режиссёру
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<Film> getFilmsByParams(@RequestParam String query,
+                                             @RequestParam Collection<String> by) {
+        return filmService.getFilmsByParams(query, by);
+    }
+
     @GetMapping("/common")
     public Collection<Film> getSharedFilms(@RequestParam Long userId, @RequestParam Long friendId) {
         return filmService.getSharedFilms(userId, friendId);

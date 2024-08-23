@@ -46,6 +46,13 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             JOIN matched_like ml ON ml.users_id = l.users_id
             WHERE l.films_id NOT IN (SELECT films_id FROM likes WHERE users_id = ?);
             """;
+    private static final String SEARCH_BY_NAME_AND_QUERY = "SELECT * FROM films WHERE name LIKE '%' || ? || '%'";
+    private static final String SEARCH_BY_DIRECTOR_AND_QUERY = """
+            SELECT * FROM FILMS WHERE ID in
+            (SELECT film_id FROM	FILM_DIRECTOR
+            WHERE DIRECTOR_ID in
+            (SELECT id FROM DIRECTORS d WHERE name LIKE '%' || ? || '%'));
+            """;
 
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);
@@ -103,5 +110,17 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     // Получаем список фильмов по id режиссера
     public Collection<Film> getAllFilmsByDirectorId(Long id) {
         return findMany(FIND_FILMS_BY_DIRECTOR_ID, id);
+    }
+
+    // Ищем фильм по совпадению в названии фильма
+    @Override
+    public Collection<Film> searchByName(String query) {
+        return findMany(SEARCH_BY_NAME_AND_QUERY, query);
+    }
+
+    // Ищем по совпадению в имени режиссёра
+    @Override
+    public Collection<Film> searchByDirector(String query) {
+        return findMany(SEARCH_BY_DIRECTOR_AND_QUERY, query);
     }
 }

@@ -4,11 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component("inMemoryFilmStorage")
 @Slf4j
@@ -59,6 +55,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     // Метод для генерации идентификатора
+    @Override
+    public Collection<Film> searchByName(String query) {
+        return List.of();
+    }
+
+    @Override
+    public Collection<Film> searchByDirector(String query) {
+        return List.of();
+    }
+
+    // Метод для генерации идентификатора нового поста
     private long getNextId() {
         long currentMaxId = films.keySet()
                 .stream()

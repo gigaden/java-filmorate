@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.film.FilmStorage;
+import ru.yandex.practicum.filmorate.dal.film.SearchParams;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
@@ -183,6 +184,32 @@ public class FilmService {
         return films;
     }
 
+    public Collection<Film> getFilmsByParams(String query, Collection<String> by) {
+        log.info("Пробуем получить фильмы со строкой запроса {}", query);
+        List<Film> films = new ArrayList<>();
+        for (String str : by) {
+            switch (SearchParams.valueOf(str)) {
+                case SearchParams.title:
+                    log.info("Ищем в названиях фильмов.");
+                    films.addAll(filmStorage.searchByName(query));
+                break;
+                case SearchParams.director:
+                    log.info("Ищем в именах режиссёров.");
+                    films.addAll(filmStorage.searchByDirector(query));
+                break;
+                default:
+                    log.warn("Неверный параметр для поиска {}", str);
+                    throw new NotFoundException("Не задан параметр для поиска, либо он неверен");
+            }
+        }
+        log.info("Коллекция фильмов по запросу отправлена.");
+        return films.stream()
+                .peek(this::setFilmFields)
+                .sorted(Comparator.comparingInt((Film el) -> el.getLikes().size()).reversed())
+                .collect(Collectors.toList());
+
+    }
+
     // Валидируем поля
     private void checkFields(Film film) {
         if (film.getDescription().length() > maxLengthOfDescription) {
@@ -242,6 +269,6 @@ public class FilmService {
         film.setMpa(mpaService.get(film.getMpa().getId()));
         film.setGenres(new LinkedHashSet<>(genreService.getAllFilmGenreById(film.getId())));
         film.setLikes(new HashSet<>(likeService.getLikesByFilmId(film.getId())));
-        film.setDirectors(new HashSet<>(directorService.getAllDirectorsByFilmId(film.getId())));
+        film.setDirectors(new LinkedHashSet<>(directorService.getAllDirectorsByFilmId(film.getId())));
     }
 }
