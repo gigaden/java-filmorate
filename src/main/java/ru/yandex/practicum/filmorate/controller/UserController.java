@@ -63,10 +63,10 @@ public class UserController {
     }
 
     // Обрабатываем запрос на удаление пользователя
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void delete(@PathVariable Long id) {
-        userService.delete(id);
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable Long userId) {
+        userService.delete(userId);
     }
 
     // Добавляем в друзья

@@ -86,6 +86,7 @@ public class UserService {
         log.info("Попытка удалить пользователя с id={}.", id);
         get(id);
         userStorage.delete(id);
+        log.info("Пользоавтель удалён id={}.", id);
     }
 
     public void addFriend(long id, long friendId) {
