@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS genres (
 CREATE TABLE IF NOT EXISTS film_genre (
     film_id BIGINT,
     genre_id BIGINT,
-    constraint fk_film_genre_film foreign key (film_id) references PUBLIC.films(id) on delete cascade,
+    constraint fk_film_genre_film foreign key (film_id) references PUBLIC.films(id) on delete cascade ON DELETE CASCADE,
     constraint fk_film_genre_genre foreign key (genre_id) references PUBLIC.genres(id) on delete cascade
 );
 
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS friends (
 CREATE TABLE IF NOT EXISTS likes (
     films_id BIGINT,
     users_id BIGINT,
-    constraint fk_likes_films foreign key (films_id) references PUBLIC.films (id) on delete cascade,
+    constraint fk_likes_films foreign key (films_id) references PUBLIC.films (id) on delete cascade ON DELETE CASCADE,
     constraint fk_likes_users foreign key (users_id) references PUBLIC.USERS (id) on delete cascade
 );
 
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS reviews
     content VARCHAR NOT NULL,
     is_positive BOOLEAN,
     user_id BIGINT REFERENCES users(id),
-    film_id BIGINT REFERENCES films(id)
+    film_id BIGINT REFERENCES films(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS useful
