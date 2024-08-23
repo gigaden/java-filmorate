@@ -20,6 +20,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?," +
             " releaseDate = ?, duration = ?, mpa = ? WHERE id = ?";
     private static final String DELETE_BY_ID = "DELETE from films WHERE id = ?";
+    private static final String FIND_FILMS_BY_DIRECTOR_ID = """
+            SELECT * FROM films f
+            JOIN FILM_DIRECTOR fd ON f.id = fd.FILM_ID
+            WHERE fd.DIRECTOR_ID = ?;
+            """;
     private static final String FIND_RECOMMENDED_FILMS_QUERY = """
             WITH user_like AS (
                  SELECT films_id
@@ -49,7 +54,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     // Получаем все фильмы
     @Override
     public Collection<Film> getAll() {
-        //return jdbc.query(FIND_ALL_QUERY, new FilmRowMapper());
         return findMany(FIND_ALL_QUERY);
     }
 
@@ -94,5 +98,10 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public void delete(Long id) {
         delete(DELETE_BY_ID, id);
+    }
+
+    // Получаем список фильмов по id режиссера
+    public Collection<Film> getAllFilmsByDirectorId(Long id) {
+        return findMany(FIND_FILMS_BY_DIRECTOR_ID, id);
     }
 }

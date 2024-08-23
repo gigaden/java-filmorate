@@ -132,7 +132,6 @@ public class UserService {
                 .map(this::get).collect(Collectors.toList());
         log.info("Коллекция общих друзей id = {} с id = {} передана", id, otherId);
         return commonFriends;
-
     }
 
     private void setUsersFriends(User user) {

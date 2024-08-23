@@ -103,3 +103,15 @@ CREATE TABLE IF NOT EXISTS useful
     user_id   BIGINT REFERENCES users (id) ON DELETE CASCADE,
     useful    BOOLEAN
 );
+
+CREATE TABLE IF NOT EXISTS directors (
+ id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+ name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS film_director (
+    film_id BIGINT,
+    director_id BIGINT,
+    constraint fk_film_director_film foreign key (film_id) references PUBLIC.films(id) on delete cascade,
+    constraint fk_film_director_director foreign key (director_id) references PUBLIC.directors(id) on delete cascade
+);

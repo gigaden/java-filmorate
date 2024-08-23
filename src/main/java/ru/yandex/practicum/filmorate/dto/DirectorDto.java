@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 @Builder
-public class MpaDto {
+public class DirectorDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private int id;
+    private long id;
     private String name;
 }

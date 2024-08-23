@@ -18,7 +18,6 @@ public class LikeStorage extends BaseDbStorage<Film> {
         super(jdbc, mapper);
     }
 
-
     // Получаем id юзеров, лайкнувших фильм
     public Collection<Long> findLikesByFilmId(long id) {
         return jdbc.queryForList(FIND_ALL_LIKES_BY_FILM_ID, Long.class, id);
@@ -33,6 +32,4 @@ public class LikeStorage extends BaseDbStorage<Film> {
     public void delLike(Long id, Long userId) {
         delete(DELETE_BY_ID, id, userId);
     }
-
-
 }

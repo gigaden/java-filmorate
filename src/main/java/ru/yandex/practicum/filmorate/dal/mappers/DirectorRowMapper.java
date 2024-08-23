@@ -2,19 +2,18 @@ package ru.yandex.practicum.filmorate.dal.mappers;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.Director;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class MpaRowMapper implements RowMapper<Mpa> {
+public class DirectorRowMapper implements RowMapper<Director> {
     @Override
-    public Mpa mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+    public Director mapRow(ResultSet resultSet, int rowNum) throws SQLException {
 
-        return Mpa.builder().id(resultSet.getInt("id"))
+        return Director.builder().id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
-                .description(resultSet.getString("description"))
                 .build();
     }
 }

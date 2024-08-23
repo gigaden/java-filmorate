@@ -43,6 +43,4 @@ public class GenreStorage extends BaseDbStorage<Genre> {
     public void insertIntoFilmGenre(long filmId, int genreId) {
         add(INSERT_FILM_GENRE, filmId, genreId);
     }
-
-
 }

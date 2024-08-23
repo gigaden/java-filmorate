@@ -57,6 +57,4 @@ public class GenreService {
             genreStorage.insertIntoFilmGenre(id, genre.getId());
         }
     }
-
-
 }
