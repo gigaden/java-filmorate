@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Director {
-    private long id;
+    private Long id;
     @NotBlank
     private String name;
 }

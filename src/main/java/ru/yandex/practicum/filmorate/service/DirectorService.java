@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.film.DirectorStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.ValidationNullException;
 import ru.yandex.practicum.filmorate.model.Director;
 
 
@@ -44,6 +45,10 @@ public class DirectorService {
     // Обновляем режиссера
     public Director update(Director newDirector) {
         log.info("Попытка обновить режиссера");
+        if (newDirector.getId() == null) {
+            log.warn("Id режиссера не указан.");
+            throw new ValidationNullException("Id режиссера должен быть указан.");
+        }
         getDirectorById(newDirector.getId());
         return directorStorage.update(newDirector);
     }
@@ -51,11 +56,11 @@ public class DirectorService {
     // Добавляем режиссера
     public Director create(Director director) {
         log.info("Попытка создать режиссера");
-            if (director.getName().isBlank()) {
-                log.warn("Имя режиссера не может быть пустым.");
-                throw new ValidationException("Имя режиссера не может быть пустым.");
-            }
-            return directorStorage.create(director);
+        if (director.getName().isBlank()) {
+            log.warn("Имя режиссера не может быть пустым.");
+            throw new ValidationException("Имя режиссера не может быть пустым.");
+        }
+        return directorStorage.create(director);
     }
 
     // Получаем список id всех режиссеров
