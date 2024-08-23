@@ -133,6 +133,15 @@ public class FilmService {
         return popularFilms;
     }
 
+    public List<Film> getSharedFilms(Long userId, Long friendId) {
+        log.info("Попытка получить общие фильмы userId={}, friendId={}.", userId, friendId);
+        List<Film> filmList = getPopularFilms(getAll().size()).stream()
+                .filter(film -> film.getLikes().contains(friendId) && film.getLikes().contains(userId))
+                .toList();
+        log.info("Общие фильмы успешно получены userId={}, friendId={}.", userId, friendId);
+        return filmList;
+    }
+
     // Валидируем поля
     private void checkFields(Film film) {
         if (film.getDescription().length() > maxLengthOfDescription) {
