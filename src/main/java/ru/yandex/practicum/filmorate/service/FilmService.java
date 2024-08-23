@@ -145,7 +145,12 @@ public class FilmService {
     public Collection<Film> getSortedDirectorFilms(Long directorId, List<String> sortBy) {
         log.info("Запрос на получение отсортированных фильмов режиссёра с id = {}", directorId);
         Collection<Film> films = filmStorage.getAllFilmsByDirectorId(directorId).stream()
-                .peek(this::setFilmFields).collect(Collectors.toList());
+                .map(film -> {
+                    setFilmFields(film);
+                    return film;
+                })
+                .collect(Collectors.toList());
+
         for (String str : sortBy) {
             films = switch (str) {
                 case "year" -> films.stream()
@@ -158,7 +163,6 @@ public class FilmService {
         }
         log.info("Коллекция фильмов режиссёра c id = {} успешно отправлена.", directorId);
         return films;
-
     }
 
     // Валидируем поля
