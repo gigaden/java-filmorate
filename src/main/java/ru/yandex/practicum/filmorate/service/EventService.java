@@ -28,7 +28,6 @@ public class EventService {
     }
 
     public void addEvent(Event event) {
-        event.setTimestamp(Instant.now().toEpochMilli());
         eventDbStorage.saveEvent(event);
     }
 
@@ -41,6 +40,7 @@ public class EventService {
     public void createEvent(Long userId, EventType eventType, Operation operation, Long entityId) {
         Event event = Event.builder()
                 .userId(userId)
+                .timestamp(Instant.now().toEpochMilli())
                 .eventType(eventType)
                 .operation(operation)
                 .entityId(entityId)
