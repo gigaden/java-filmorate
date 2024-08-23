@@ -43,4 +43,36 @@ public class DirectorStorage extends BaseDbStorage<Director> {
     public Optional<Director> getDirectorById(long id) {
         return findOne(GET_DIRECTOR_BY_ID, id);
     }
+
+    // Обновляем режиссера
+    public Director update(Director director) {
+        update(UPDATE_DIRECTOR_QUERY,
+                director.getName(),
+                director.getId()
+        );
+        return director;
+    }
+
+    //создаем режиссера
+    public Director create(Director director) {
+        long id = insert(INSERT_DIRECTOR,
+                director.getName());
+        director.setId(id);
+        return director;
+    }
+
+    // Добавляем фильму режиссера, занося данные в сводную таблицу
+    public void insertIntoFilmDirector(long filmId, long directorId) {
+        add(INSERT_FILM_DIRECTOR, filmId, directorId);
+    }
+
+    // Удаляем режиссера по id
+    public void delete(long id) {
+        delete(DELETE_DIRECTOR_BY_ID, id);
+    }
+
+    // Получаем список директоров по айди фильма
+    public List<Director> getFilmDirectors(Long id) {
+        return findMany(GET_DIRECTORS_BY_FILM_ID, id);
+    }
 }

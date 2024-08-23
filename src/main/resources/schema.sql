@@ -1,5 +1,9 @@
 drop table if exists EVENTS cascade;
 
+drop table if exists FILM_DIRECTOR cascade;
+
+drop table if exists DIRECTORS cascade;
+
 drop table if exists FILM_GENRE cascade;
 
 drop table if exists FRIENDS cascade;
@@ -17,8 +21,6 @@ drop table if exists FILMS cascade;
 drop table if exists MPAS cascade;
 
 drop table if exists USERS cascade;
-
-
 
 CREATE TABLE IF NOT EXISTS mpas
 (
@@ -107,18 +109,6 @@ CREATE TABLE IF NOT EXISTS useful
 CREATE TABLE IF NOT EXISTS directors (
  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
  name VARCHAR(255) NOT NULL UNIQUE
-);
-
-CREATE TABLE IF NOT EXISTS film_director (
-    film_id BIGINT,
-    director_id BIGINT,
-    constraint fk_film_director_film foreign key (film_id) references PUBLIC.films(id) on delete cascade,
-    constraint fk_film_director_director foreign key (director_id) references PUBLIC.directors(id) on delete cascade
-);
-
-CREATE TABLE IF NOT EXISTS directors (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS film_director (

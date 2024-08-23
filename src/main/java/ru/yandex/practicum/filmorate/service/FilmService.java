@@ -66,6 +66,8 @@ public class FilmService {
         return film;
     }
 
+
+
     public Film create(Film film) {
         log.info("Попытка добавить новый фильм.");
         if (film.getName().isBlank()) {

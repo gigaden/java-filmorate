@@ -53,4 +53,6 @@ public class ErrorHandler {
         log.error("Ошибка 500: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
+
+
 }
