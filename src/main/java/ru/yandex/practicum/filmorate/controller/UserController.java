@@ -50,7 +50,7 @@ public class UserController {
 
     // Обрабатываем запрос на удаление пользователя
     @DeleteMapping("/{userId}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long userId) {
         userService.delete(userId);
     }
