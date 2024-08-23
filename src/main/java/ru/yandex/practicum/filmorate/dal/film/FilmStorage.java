@@ -9,6 +9,8 @@ public interface FilmStorage {
 
     Collection<Film> getAll();
 
+    Collection<Film> getRecommendedFilms(Long id);
+
     Optional<Film> get(Long id);
 
     Film create(Film film);

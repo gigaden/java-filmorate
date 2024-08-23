@@ -20,6 +20,27 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?," +
             " releaseDate = ?, duration = ?, mpa = ? WHERE id = ?";
     private static final String DELETE_BY_ID = "DELETE from films WHERE id = ?";
+    private static final String FIND_RECOMMENDED_FILMS_QUERY = """
+            WITH user_like AS (
+                 SELECT films_id
+                 FROM likes
+                 WHERE users_id = ?
+            ),
+            matched_like AS (
+                 SELECT l.users_id, COUNT(l.films_id)
+                 FROM likes l
+                 JOIN user_like ul ON l.films_id = ul.films_id
+                 WHERE l.users_id != ?
+                 GROUP BY l.users_id
+                 ORDER BY COUNT(l.films_id) DESC
+                 LIMIT 1
+            )
+            SELECT f.*
+            FROM likes l
+            JOIN films f ON f.ID = l.films_id
+            JOIN matched_like ml ON ml.users_id = l.users_id
+            WHERE l.films_id NOT IN (SELECT films_id FROM likes WHERE users_id = ?);
+            """;
 
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);
@@ -30,6 +51,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     public Collection<Film> getAll() {
         //return jdbc.query(FIND_ALL_QUERY, new FilmRowMapper());
         return findMany(FIND_ALL_QUERY);
+    }
+
+    @Override
+    public Collection<Film> getRecommendedFilms(Long id) {
+        return findMany(FIND_RECOMMENDED_FILMS_QUERY, id, id, id);
     }
 
     // Получаем фильм по id
