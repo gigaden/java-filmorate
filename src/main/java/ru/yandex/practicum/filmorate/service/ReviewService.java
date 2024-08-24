@@ -68,7 +68,7 @@ public class ReviewService {
     }
 
     public Collection<Review> getAllOfParam(Long filmId, int count) {
-        if (filmId != null && filmId > 0) {
+        if (filmId != null) {
             log.info("Попытка получить отзывы фильма filmId: {}, count: {}", filmId, count);
             Collection<Review> reviewCollection = setUseful(reviewDbStorage.getAllOfFilm(filmId, count));
             log.info("Отзывы фильма получены filmId: {}, count: {}", filmId, count);
