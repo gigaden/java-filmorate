@@ -39,7 +39,7 @@ public class ReviewsController {
     }
 
     @GetMapping
-    public Collection<Review> getAllOfParam(@RequestParam Long filmId, @RequestParam(defaultValue = "10") int count) {
+    public Collection<Review> getAllOfParam(@RequestParam(required = false) Long filmId, @RequestParam(defaultValue = "10") int count) {
         return reviewService.getAllOfParam(filmId, count);
     }
 
