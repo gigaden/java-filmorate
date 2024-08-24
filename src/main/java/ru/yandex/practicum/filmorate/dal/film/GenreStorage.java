@@ -19,6 +19,7 @@ public class GenreStorage extends BaseDbStorage<Genre> {
     private static final String GET_ALL_QUERY = "SELECT * FROM genres ORDER BY id";
     private static final String INSERT_FILM_GENRE = "INSERT INTO film_genre (film_id, genre_id) VALUES(?,?)";
     private static final String GET_GENRE_BY_ID = "SELECT * FROM genres WHERE id = ?";
+    private static final String DELETE_FILM_GENRE = "DELETE FROM film_genre WHERE film_id = ?";
 
     public GenreStorage(JdbcTemplate jdbc, GenreRowMapper mapper) {
         super(jdbc, mapper);
@@ -42,5 +43,9 @@ public class GenreStorage extends BaseDbStorage<Genre> {
     // Добавляем фильму жанр, занося данные в сводную таблицу
     public void insertIntoFilmGenre(long filmId, int genreId) {
         add(INSERT_FILM_GENRE, filmId, genreId);
+    }
+
+    public void removeGenreByFilmId(Long filmId) {
+        delete(DELETE_FILM_GENRE, filmId);
     }
 }
