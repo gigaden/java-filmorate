@@ -74,6 +74,7 @@ public class DirectorService {
 
     // Добавляем режиссера к фильму в сводную таблицу
     public void addDirectorToFilm(long id, Set<Director> directors) {
+        directorStorage.removeDirectorByFilmId(id);
         if (directors != null) {
             for (Director director : directors) {
                 directorStorage.insertIntoFilmDirector(id, director.getId());
