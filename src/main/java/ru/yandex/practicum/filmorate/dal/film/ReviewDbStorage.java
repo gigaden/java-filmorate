@@ -85,8 +85,10 @@ public class ReviewDbStorage extends BaseDbStorage<Review> {
         if (reviewFromDb != null) {
             Long userId = reviewFromDb.getUserId();
             Long filmId = reviewFromDb.getFilmId();
-            review.setUserId(userId);
-            review.setFilmId(filmId);
+            if (userId != review.getUserId() || filmId != review.getFilmId()) {
+                review.setUserId(userId);
+                review.setFilmId(filmId);
+            }
         }
 
         update(UPDATE_QUERY,
