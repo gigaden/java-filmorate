@@ -11,7 +11,9 @@ import ru.yandex.practicum.filmorate.model.enums.Operation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -71,11 +73,23 @@ public class ReviewService {
         if (filmId != null) {
             log.info("Попытка получить отзывы фильма filmId: {}, count: {}", filmId, count);
             Collection<Review> reviewCollection = setUseful(reviewDbStorage.getAllOfFilm(filmId, count));
+            for (Review review : reviewCollection) {
+                review.setUseful(reviewDbStorage.findUsefulCount(review.getReviewId()));
+            }
+            reviewCollection = reviewCollection.stream()
+                    .sorted(Comparator.comparing(Review::getUseful).reversed())
+                    .collect(Collectors.toList());
             log.info("Отзывы фильма получены filmId: {}, count: {}", filmId, count);
             return reviewCollection;
         } else {
             log.info("Попытка получить отзывы всех фильмов count: {}", count);
             Collection<Review> reviewCollection = setUseful(reviewDbStorage.getAll(count));
+            for (Review review : reviewCollection) {
+                review.setUseful(reviewDbStorage.findUsefulCount(review.getReviewId()));
+            }
+            reviewCollection = reviewCollection.stream()
+                    .sorted(Comparator.comparing(Review::getUseful).reversed())
+                    .collect(Collectors.toList());
             log.info("Отзывы всех фильмов получены count: {}", count);
             return reviewCollection;
         }
