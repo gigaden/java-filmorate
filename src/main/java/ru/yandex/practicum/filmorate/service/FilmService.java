@@ -176,6 +176,7 @@ public class FilmService {
     // Получаем фильмы режиссёра, отсортированные по параметрам.
     public Collection<Film> getSortedDirectorFilms(Long directorId, List<String> sortBy) {
         log.info("Запрос на получение отсортированных фильмов режиссёра с id = {}", directorId);
+        directorService.getDirectorById(directorId);
         Collection<Film> films = filmStorage.getAllFilmsByDirectorId(directorId).stream()
                 .map(film -> {
                     setFilmFields(film);
