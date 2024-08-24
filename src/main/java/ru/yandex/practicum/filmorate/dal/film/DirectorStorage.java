@@ -24,6 +24,8 @@ public class DirectorStorage extends BaseDbStorage<Director> {
     private static final String GET_DIRECTORS_BY_FILM_ID = "SELECT * FROM directors d " +
             "INNER JOIN film_director fd on d.id = fd.director_id " +
             "WHERE film_id = ?";
+    private static final String DELETE_DIRECTOR_FILM = "DELETE FROM film_director WHERE film_id = ?";
+
 
     public DirectorStorage(JdbcTemplate jdbc, DirectorRowMapper mapper) {
         super(jdbc, mapper);
@@ -74,5 +76,9 @@ public class DirectorStorage extends BaseDbStorage<Director> {
     // Получаем список директоров по айди фильма
     public List<Director> getFilmDirectors(Long id) {
         return findMany(GET_DIRECTORS_BY_FILM_ID, id);
+    }
+
+    public void removeDirectorByFilmId(long filmId) {
+        delete(DELETE_DIRECTOR_FILM, filmId);
     }
 }
