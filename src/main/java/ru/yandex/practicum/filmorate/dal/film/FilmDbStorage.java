@@ -49,12 +49,12 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             JOIN matched_like ml ON ml.users_id = l.users_id
             WHERE l.films_id NOT IN (SELECT films_id FROM likes WHERE users_id = ?);
             """;
-    private static final String SEARCH_BY_NAME_AND_QUERY = "SELECT * FROM films WHERE name LIKE '%' || ? || '%'";
+    private static final String SEARCH_BY_NAME_AND_QUERY = "SELECT * FROM films WHERE LOWER(name) LIKE LOWER('%' || ? || '%')";
     private static final String SEARCH_BY_DIRECTOR_AND_QUERY = """
             SELECT * FROM FILMS WHERE ID in
             (SELECT film_id FROM	FILM_DIRECTOR
             WHERE DIRECTOR_ID in
-            (SELECT id FROM DIRECTORS d WHERE name LIKE '%' || ? || '%'));
+            (SELECT id FROM DIRECTORS d WHERE LOWER(name) LIKE LOWER('%' || ? || '%')));
             """;
 
 
