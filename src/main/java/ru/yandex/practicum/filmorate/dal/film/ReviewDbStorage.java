@@ -80,6 +80,15 @@ public class ReviewDbStorage extends BaseDbStorage<Review> {
 
     public Review update(Review review) {
         log.info("Попытка обновить отзыв в базе данных: {}", get(review.getReviewId()));
+        Review reviewFromDb = get(review.getReviewId()).orElse(null);
+
+        if (reviewFromDb != null) {
+            Long userId = reviewFromDb.getUserId();
+            Long filmId = reviewFromDb.getFilmId();
+            review.setUserId(userId);
+            review.setFilmId(filmId);
+        }
+
         update(UPDATE_QUERY,
                 review.getContent(),
                 review.getIsPositive(),
