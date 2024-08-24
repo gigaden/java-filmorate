@@ -57,13 +57,9 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             (SELECT id FROM DIRECTORS d WHERE name LIKE '%' || ? || '%'));
             """;
 
-    GenreService genreService;
-    DirectorService directorService;
 
-    public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper, GenreService genreService, DirectorService directorService) {
+    public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);
-        this.genreService = genreService;
-        this.directorService = directorService;
     }
 
     // Получаем все фильмы
@@ -106,17 +102,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId(),
                 film.getId());
-        if (film.getGenres() != null) {
-            Set<Genre> genreList = film.getGenres().stream()
-                    .sorted((Comparator.comparing(Genre::getId)))
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
 
-            film.setGenres(genreList);
-        } else {
-            film.setGenres(new LinkedHashSet<>());
-        }
-        genreService.addGenreToFilm(film.getId(), film.getGenres());
-        directorService.addDirectorToFilm(film.getId(), film.getDirectors());
         return film;
     }
 

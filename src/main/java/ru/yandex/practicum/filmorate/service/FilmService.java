@@ -107,6 +107,17 @@ public class FilmService {
         get(newFilm.getId());
         checkFields(newFilm);
         Film film = filmStorage.update(newFilm);
+        if (film.getGenres() != null) {
+            Set<Genre> genreList = film.getGenres().stream()
+                    .sorted((Comparator.comparing(Genre::getId)))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+            film.setGenres(genreList);
+        } else {
+            film.setGenres(new LinkedHashSet<>());
+        }
+        genreService.addGenreToFilm(film.getId(), film.getGenres());
+        directorService.addDirectorToFilm(film.getId(), film.getDirectors());
         log.info("Обновлён фильм с id = {}.", film.getId());
         return film;
     }
