@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.dal.BaseDbStorage;
 import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.GenreService;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository("filmDbStorage")
 public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
@@ -54,8 +56,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             (SELECT id FROM DIRECTORS d WHERE name LIKE '%' || ? || '%'));
             """;
 
-    public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
+    GenreService genreService;
+
+    public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper, GenreService genreService) {
         super(jdbc, mapper);
+        this.genreService = genreService;
     }
 
     // Получаем все фильмы
@@ -98,6 +103,16 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId(),
                 film.getId());
+        if (film.getGenres() != null) {
+            Set<Genre> genreList = film.getGenres().stream()
+                    .sorted((Comparator.comparing(Genre::getId)))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+            film.setGenres(genreList);
+        } else {
+            film.setGenres(new LinkedHashSet<>());
+        }
+        genreService.addGenreToFilm(film.getId(), film.getGenres());
         return film;
     }
 
