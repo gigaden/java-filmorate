@@ -53,8 +53,11 @@ public class GenreService {
 
     // Добавляем жанр к фильму в сводную таблицу
     public void addGenreToFilm(long id, Set<Genre> genres) {
-        for (Genre genre : genres) {
-            genreStorage.insertIntoFilmGenre(id, genre.getId());
+        genreStorage.removeGenreByFilmId(id);
+        if (genres != null) {
+            for (Genre genre : genres) {
+                genreStorage.insertIntoFilmGenre(id, genre.getId());
+            }
         }
     }
 }
