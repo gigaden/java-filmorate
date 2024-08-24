@@ -77,7 +77,7 @@ public class FilmService {
         checkFields(film);
         film.setLikes(new HashSet<>());
         if (film.getGenres() == null) {
-            film.setGenres(new HashSet<>());
+            film.setGenres(new LinkedHashSet<>());
         }
 
         if (film.getDirectors() == null) {
