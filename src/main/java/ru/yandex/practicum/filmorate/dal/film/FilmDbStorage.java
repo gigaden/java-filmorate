@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.dal.BaseDbStorage;
 import ru.yandex.practicum.filmorate.dal.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.GenreService;
 
 import java.util.*;
@@ -57,10 +58,12 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             """;
 
     GenreService genreService;
+    DirectorService directorService;
 
-    public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper, GenreService genreService) {
+    public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper, GenreService genreService, DirectorService directorService) {
         super(jdbc, mapper);
         this.genreService = genreService;
+        this.directorService = directorService;
     }
 
     // Получаем все фильмы
@@ -113,6 +116,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             film.setGenres(new LinkedHashSet<>());
         }
         genreService.addGenreToFilm(film.getId(), film.getGenres());
+        directorService.addDirectorToFilm(film.getId(), film.getDirectors());
         return film;
     }
 
