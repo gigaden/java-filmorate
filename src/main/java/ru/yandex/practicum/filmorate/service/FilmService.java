@@ -202,12 +202,12 @@ public class FilmService {
         log.info("Пробуем получить фильмы со строкой запроса {}", query);
         List<Film> films = new ArrayList<>();
         for (String str : by) {
-            switch (SearchParams.valueOf(str)) {
-                case SearchParams.title:
+            switch (SearchParams.valueOf(str.toUpperCase())) {
+                case SearchParams.TITLE:
                     log.info("Ищем в названиях фильмов.");
                     films.addAll(filmStorage.searchByName(query));
                 break;
-                case SearchParams.director:
+                case SearchParams.DIRECTOR:
                     log.info("Ищем в именах режиссёров.");
                     films.addAll(filmStorage.searchByDirector(query));
                 break;
