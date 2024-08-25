@@ -73,23 +73,13 @@ public class ReviewService {
         if (filmId != null) {
             log.info("Попытка получить отзывы фильма filmId: {}, count: {}", filmId, count);
             Collection<Review> reviewCollection = setUseful(reviewDbStorage.getAllOfFilm(filmId, count));
-            for (Review review : reviewCollection) {
-                review.setUseful(reviewDbStorage.findUsefulCount(review.getReviewId()));
-            }
-            reviewCollection = reviewCollection.stream()
-                    .sorted(Comparator.comparing(Review::getUseful).reversed())
-                    .collect(Collectors.toList());
+            reviewCollection = getPopularReviews(reviewCollection);
             log.info("Отзывы фильма получены filmId: {}, count: {}", filmId, count);
             return reviewCollection;
         } else {
             log.info("Попытка получить отзывы всех фильмов count: {}", count);
             Collection<Review> reviewCollection = setUseful(reviewDbStorage.getAll(count));
-            for (Review review : reviewCollection) {
-                review.setUseful(reviewDbStorage.findUsefulCount(review.getReviewId()));
-            }
-            reviewCollection = reviewCollection.stream()
-                    .sorted(Comparator.comparing(Review::getUseful).reversed())
-                    .collect(Collectors.toList());
+            reviewCollection = getPopularReviews(reviewCollection);
             log.info("Отзывы всех фильмов получены count: {}", count);
             return reviewCollection;
         }
@@ -114,5 +104,15 @@ public class ReviewService {
             usefulReviews.add(rew);
         }
         return usefulReviews;
+    }
+
+    public Collection<Review> getPopularReviews(Collection<Review> reviewCollection) {
+        for (Review review : reviewCollection) {
+            review.setUseful(reviewDbStorage.findUsefulCount(review.getReviewId()));
+        }
+        reviewCollection = reviewCollection.stream()
+                .sorted(Comparator.comparing(Review::getUseful).reversed())
+                .collect(Collectors.toList());
+        return reviewCollection;
     }
 }
