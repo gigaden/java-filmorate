@@ -54,16 +54,16 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             (SELECT id FROM DIRECTORS d WHERE LOWER(name) LIKE LOWER('%' || ? || '%')));
             """;
     private static final String FIND_POPULAR_FILMS_QUERY = """
-    SELECT f.* FROM films f
-    LEFT JOIN mpas m ON f.mpa = m.id
-    LEFT JOIN likes l ON f.id = l.films_id
-    LEFT JOIN film_genre fg ON f.id = fg.film_id
-    WHERE (? IS NULL OR YEAR(f.releaseDate) = ?)
-    AND (? IS NULL OR fg.GENRE_ID = ?)
-    GROUP BY f.id
-    ORDER BY COUNT(l.users_id) DESC
-    LIMIT ?;
-    """;
+            SELECT f.* FROM films f
+            LEFT JOIN mpas m ON f.mpa = m.id
+            LEFT JOIN likes l ON f.id = l.films_id
+            LEFT JOIN film_genre fg ON f.id = fg.film_id
+            WHERE (? IS NULL OR YEAR(f.releaseDate) = ?)
+            AND (? IS NULL OR fg.GENRE_ID = ?)
+            GROUP BY f.id
+            ORDER BY COUNT(l.users_id) DESC
+            LIMIT ?;
+            """;
 
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);

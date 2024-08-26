@@ -67,7 +67,6 @@ public class FilmService {
     }
 
 
-
     public Film create(Film film) {
         log.info("Попытка добавить новый фильм.");
         if (film.getName().isBlank()) {
@@ -200,11 +199,11 @@ public class FilmService {
                 case SearchParams.TITLE:
                     log.info("Ищем в названиях фильмов.");
                     films.addAll(filmStorage.searchByName(query));
-                break;
+                    break;
                 case SearchParams.DIRECTOR:
                     log.info("Ищем в именах режиссёров.");
                     films.addAll(filmStorage.searchByDirector(query));
-                break;
+                    break;
                 default:
                     log.warn("Неверный параметр для поиска {}", str);
                     throw new NotFoundException("Не задан параметр для поиска, либо он неверен");
