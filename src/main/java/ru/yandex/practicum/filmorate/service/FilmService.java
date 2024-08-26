@@ -149,16 +149,10 @@ public class FilmService {
 
     public Collection<Film> getPopularFilms(int count, Integer genreId, Integer year) {
         log.info("Запрос на получение популярных фильмов.");
-        if (count > getAll().size()) {
-            count = getAll().size();
+        Collection<Film> popularFilms = filmStorage.getPopularFilms(count, genreId, year);
+        for (Film film : popularFilms) {
+            setFilmFields(film);
         }
-        List<Film> popularFilms = getAll().stream()
-                .filter(film -> Objects.isNull(year) || Objects.equals(film.getReleaseDate().getYear(), year))
-                .filter(film -> Objects.isNull(genreId) || film.getGenres()
-                        .stream()
-                        .anyMatch(genre -> Objects.equals(genre.getId(), genreId)))
-                .sorted(Comparator.comparingInt((Film el) -> el.getLikes().size()).reversed()).limit(count)
-                .collect(Collectors.toList());
         log.info("Коллекция популярных фильмов успешно отправлена.");
         return popularFilms;
     }
