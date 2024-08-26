@@ -34,7 +34,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             matched_like AS (
                  SELECT l.users_id, COUNT(l.films_id)
                  FROM likes l
-                 JOIN user_like ul ON l.films_id = ul.films_id
+                 LEFT JOIN user_like ul ON l.films_id = ul.films_id
                  WHERE l.users_id != ?
                  GROUP BY l.users_id
                  ORDER BY COUNT(l.films_id) DESC
@@ -42,8 +42,8 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             )
             SELECT f.*
             FROM likes l
-            JOIN films f ON f.ID = l.films_id
-            JOIN matched_like ml ON ml.users_id = l.users_id
+            LEFT JOIN films f ON f.ID = l.films_id
+            LEFT JOIN matched_like ml ON ml.users_id = l.users_id
             WHERE l.films_id NOT IN (SELECT films_id FROM likes WHERE users_id = ?);
             """;
     private static final String SEARCH_BY_NAME_AND_QUERY = "SELECT * FROM films WHERE LOWER(name) LIKE LOWER('%' || ? || '%')";
@@ -53,7 +53,17 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             WHERE DIRECTOR_ID in
             (SELECT id FROM DIRECTORS d WHERE LOWER(name) LIKE LOWER('%' || ? || '%')));
             """;
-
+    private static final String FIND_POPULAR_FILMS_QUERY = """
+    SELECT f.* FROM films f
+    LEFT JOIN mpas m ON f.mpa = m.id
+    LEFT JOIN likes l ON f.id = l.films_id
+    LEFT JOIN film_genre fg ON f.id = fg.film_id
+    WHERE (? IS NULL OR YEAR(f.releaseDate) = ?)
+    AND (? IS NULL OR fg.GENRE_ID = ?)
+    GROUP BY f.id
+    ORDER BY COUNT(l.users_id) DESC
+    LIMIT ?;
+    """;
 
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);
@@ -68,6 +78,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public Collection<Film> getRecommendedFilms(Long id) {
         return findMany(FIND_RECOMMENDED_FILMS_QUERY, id, id, id);
+    }
+
+    @Override
+    public Collection<Film> getPopularFilms(int count, Integer genreId, Integer year) {
+        return findMany(FIND_POPULAR_FILMS_QUERY, year, year, genreId, genreId, count);
     }
 
     // Получаем фильм по id
