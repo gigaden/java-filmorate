@@ -11,6 +11,8 @@ public interface FilmStorage {
 
     Collection<Film> getRecommendedFilms(Long id);
 
+    Collection<Film> getPopularFilms(int count, Integer genreId, Integer year);
+
     Optional<Film> get(Long id);
 
     Film create(Film film);
