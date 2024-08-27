@@ -28,9 +28,9 @@ WHERE NOT EXISTS (SELECT * FROM genres);
 -- )
 -- WHERE NOT EXISTS (SELECT * FROM users);
 --
--- INSERT INTO likes
+-- INSERT INTO ratingId
 -- SELECT * FROM ( VALUES (1, 3), (1, 2), (1,1), (2,2))
--- WHERE NOT EXISTS (SELECT * FROM likes);
+-- WHERE NOT EXISTS (SELECT * FROM ratingId);
 --
 -- INSERT INTO directors(name)
 -- SELECT * FROM ( VALUES ('Spilberg'), ('Кустурица'), ('Джордж Лукас'))

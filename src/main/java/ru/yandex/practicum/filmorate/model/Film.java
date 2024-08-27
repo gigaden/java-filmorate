@@ -19,6 +19,7 @@ public class Film {
     private Integer duration;
     private Mpa mpa;
     private Set<Genre> genres;
-    private Set<Long> likes;
+    private Set<Long> ratingId;
+    private Double rating;
     private Set<Director> directors;
 }

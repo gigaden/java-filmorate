@@ -17,6 +17,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+
 import java.util.Collection;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class FilmController {
 
     private final FilmService filmService;
     private final DirectorService directorService;
+
 
     @Autowired
     public FilmController(FilmService filmService, DirectorService directorService) {
@@ -68,17 +70,17 @@ public class FilmController {
     }
 
     // Пользователь ставит лайк фильму
-    @PutMapping("/{id}/like/{userId}")
+    @PutMapping("/{id}/rating/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
-        filmService.addLike(id, userId);
+    public void addLike(@PathVariable Long id, @PathVariable Long userId, @RequestParam Integer rating) {
+        filmService.addRatingByFilm(id, userId, rating);
     }
 
     // Пользователь убирает лайк фильму
-    @DeleteMapping("/{id}/like/{userId}")
+    @DeleteMapping("/{id}/rating/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
-        filmService.deleteLike(id, userId);
+        filmService.deleteRatingByFilm(id, userId);
     }
 
     // Получаем популярные фильмы
