@@ -30,27 +30,29 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             """;
     private static final String FIND_RECOMMENDED_FILMS_QUERY = """
             WITH user_like AS (
-                 SELECT films_id
-                 FROM likes
+                 SELECT films_id, rating
+                 FROM ratings
                  WHERE users_id = ?
             ),
             matched_like AS (
                  SELECT l.users_id, COUNT(l.films_id)
-                 FROM likes l
-                 LEFT JOIN user_like ul ON l.films_id = ul.films_id
+                 FROM ratings l
+                 INNER JOIN user_like ul ON l.films_id = ul.films_id
+                 AND ABS(l.rating - ul.rating) <= 1
                  WHERE l.users_id != ?
                  GROUP BY l.users_id
                  ORDER BY COUNT(l.films_id) DESC
                  LIMIT 1
             )
             SELECT f.*
-            FROM likes l
+            FROM ratings l
             LEFT JOIN films f ON f.ID = l.films_id
-            LEFT JOIN matched_like ml ON ml.users_id = l.users_id
-            WHERE l.films_id NOT IN (SELECT films_id FROM likes WHERE users_id = ?)
+            INNER JOIN matched_like ml ON ml.users_id = l.users_id
+            WHERE l.films_id NOT IN (SELECT films_id FROM ratings WHERE users_id = ?)
+            AND f.rating > 5
             """;
 // новый запрос неработает с рейтингами
-/*    private static final String FIND_RECOMMENDED_FILMS_QUERY = """
+/*    private static final String FIND_RECOMMENDED_FILMS_QUERY22 = """
             WITH user_rating AS (
                  SELECT films_id
                  FROM rating
@@ -60,6 +62,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                  SELECT r.users_id, COUNT(r.films_id)
                  FROM rating r
                  LEFT JOIN user_rating ur ON r.films_id = ur.films_id
+                 AND ABS(l1.USER_RATING - l2.USER_RATING) <= 1
                  WHERE r.users_id != ?
                  GROUP BY r.users_id
                  ORDER BY COUNT(r.films_id) DESC
@@ -82,7 +85,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             SELECT f.*
             FROM films f
             LEFT JOIN mpas m ON f.mpa = m.id
-            LEFT JOIN likes l ON f.id = l.films_id
+            LEFT JOIN ratings l ON f.id = l.films_id
             LEFT JOIN film_genre fg ON f.id = fg.film_id
             WHERE (? IS NULL OR YEAR(f.releaseDate) = ?)
             AND (? IS NULL OR fg.GENRE_ID = ?)

@@ -10,7 +10,7 @@ drop table if exists FRIENDS cascade;
 
 drop table if exists GENRES cascade;
 
-drop table if exists rating cascade;
+drop table if exists ratings cascade;
 
 drop table if exists USEFUL cascade;
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS friends
     constraint fk_friend_users foreign key (friend_id) references PUBLIC.users (id) on delete cascade
 );
 
-CREATE TABLE IF NOT EXISTS rating
+CREATE TABLE IF NOT EXISTS ratings
 (
     films_id BIGINT,
     users_id BIGINT,

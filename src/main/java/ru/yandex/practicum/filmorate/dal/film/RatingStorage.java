@@ -14,23 +14,23 @@ import java.util.Collection;
 public class RatingStorage extends BaseDbStorage<Film> {
     private static final String FIND_ALL_RATING_BY_FILM_ID = """
             SELECT users_id
-            FROM rating
+            FROM ratings
             WHERE films_id = ?
             """;
     private static final String ADD_RATING_TO_FILMS_QUERY = """
-            INSERT INTO rating(films_id, users_id, rating)
+            INSERT INTO ratings(films_id, users_id, rating)
             VALUES (?,?,?)
             """;
     private static final String UPDATE_RATING_FILMS_QUERY = """
             UPDATE films
             SET rating = (
                 SELECT AVG(rating)
-                FROM rating
+                FROM ratings
                 WHERE films_id = ?)
             WHERE id = ?
             """;
     private static final String DELETE_RATING_QUERY = """
-            DELETE from ratingId
+            DELETE from ratings
             WHERE films_id = ? AND users_id = ?
             """;
 

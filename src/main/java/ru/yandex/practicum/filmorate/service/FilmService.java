@@ -154,10 +154,12 @@ public class FilmService {
         eventService.createEvent(userId, EventType.RATING, Operation.REMOVE, id);
         log.info("Пользователь с id = {} убрал лайк фильму с id = {}", userId, id);
     }
-
+ // сортирнуть не по лайкам а по рейтиингу , выше рейтинг desc
     public Collection<Film> getPopularFilms(int count, Integer genreId, Integer year) {
         log.info("Запрос на получение популярных фильмов.");
-        Collection<Film> popularFilms = filmStorage.getPopularFilms(count, genreId, year);
+        Collection<Film> popularFilms = filmStorage.getPopularFilms(count, genreId, year).stream()
+                .sorted((f1, f2) -> Double.compare(f2.getRating(),f1.getRating()))
+                .collect(Collectors.toList());
         for (Film film : popularFilms) {
             setFilmFields(film);
         }
@@ -190,8 +192,8 @@ public class FilmService {
             films = switch (str) {
                 case "year" -> films.stream()
                         .sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
-                case "ratingId" -> films.stream()
-                        .sorted((f1, f2) -> f2.getRatingId().size() - f1.getRatingId().size())
+                case "rating" -> films.stream()
+                        .sorted((f1, f2) -> Double.compare(f2.getRating(),f1.getRating()))
                         .collect(Collectors.toList());
                 default -> films;
             };
