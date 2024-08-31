@@ -10,5 +10,4 @@ public class GenreDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int id;
     private String name;
-
 }

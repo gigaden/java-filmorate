@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dal.film;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dal.BaseDbStorage;
 import ru.yandex.practicum.filmorate.dal.mappers.MpaRowMapper;
 import ru.yandex.practicum.filmorate.model.Mpa;
 

@@ -58,7 +58,7 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Пользователь с id={} удалён.", id);
     }
 
-    // Метод для генерации идентификатора нового поста
+    // Метод для генерации идентификатора
     private long getNextId() {
         long currentMaxId = users.keySet()
                 .stream()

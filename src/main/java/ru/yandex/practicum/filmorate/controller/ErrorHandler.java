@@ -6,19 +6,24 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
+
+import java.util.HashMap;
 
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
 
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(final NotFoundException e) {
-        log.error("Ошибка 404 NotFoundException: {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
+    public HashMap<String, String> handleNotFound(final NotFoundException e, WebRequest request) {
+        HashMap<String, String> response = new HashMap<>();
+        response.put("error", e.getMessage());
+        return response;
     }
 
     @ExceptionHandler
@@ -48,4 +53,6 @@ public class ErrorHandler {
         log.error("Ошибка 500: {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
+
+
 }

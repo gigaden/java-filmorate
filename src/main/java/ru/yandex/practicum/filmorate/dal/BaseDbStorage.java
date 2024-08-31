@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.dal.film;
+package ru.yandex.practicum.filmorate.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -56,13 +57,16 @@ public class BaseDbStorage<T> {
         }
     }
 
+    protected <T> List<T> findManyInstances(String query, Class<T> type, Object... params) {
+        return jdbc.query(query, new SingleColumnRowMapper<>(type), params);
+    }
+
     protected void update(String query, Object... params) {
         int rowsUpdated = jdbc.update(query, params);
         if (rowsUpdated == 0) {
             throw new NotFoundException("Не удалось обновить данные");
         }
     }
-
 
     protected void add(String query, Object... params) {
         jdbc.update(connection -> {

@@ -28,8 +28,5 @@ public class User {
     private String name;
     @NotNull
     private LocalDate birthday;
-
     private Set<Long> friends;
-
-
 }

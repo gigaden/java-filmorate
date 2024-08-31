@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dal.film;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dal.BaseDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -16,7 +17,6 @@ public class LikeStorage extends BaseDbStorage<Film> {
     public LikeStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
     }
-
 
     // Получаем id юзеров, лайкнувших фильм
     public Collection<Long> findLikesByFilmId(long id) {
@@ -32,6 +32,4 @@ public class LikeStorage extends BaseDbStorage<Film> {
     public void delLike(Long id, Long userId) {
         delete(DELETE_BY_ID, id, userId);
     }
-
-
 }

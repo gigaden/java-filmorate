@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.ValidationNullException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.EventType;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -22,12 +24,14 @@ public class UserService {
     private final UserStorage userStorage;
     private final FriendsService friendsService;
     private final LocalDate validDate = LocalDate.now();
+    private final EventService eventService;
 
     @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
-                       FriendsService friendsService) {
+                       FriendsService friendsService, EventService eventService) {
         this.userStorage = userStorage;
         this.friendsService = friendsService;
+        this.eventService = eventService;
     }
 
     public Collection<User> getAll() {
@@ -82,12 +86,13 @@ public class UserService {
         log.info("Попытка удалить пользователя с id={}.", id);
         get(id);
         userStorage.delete(id);
+        log.info("Пользоавтель удалён id={}.", id);
     }
 
     public void addFriend(long id, long friendId) {
         log.info("Добавляем пользователю id={} друга id={}", id, friendId);
         User user = get(id);
-        User friend = get(friendId);
+        get(friendId);
         boolean friendship = false;
         if (id == friendId) {
             throw new NotFoundException("Нельзя добавить в друзья самого себя.");
@@ -99,14 +104,16 @@ public class UserService {
         }
         friendsService.addFriend(friendId, id, friendship);
         log.info("Добавили пользователю id={} друга id={}", id, friendId);
+        eventService.createEvent(id, EventType.FRIEND, Operation.ADD, friendId);
     }
 
     public void delFriend(Long id, Long friendId) {
         log.info("Удаляем у пользователя id={} друга id={}", id, friendId);
-        User user = get(id);
-        User friend = get(friendId);
+        get(id);
+        get(friendId);
         friendsService.deleteFriend(id, friendId);
         log.info("Удалили у пользователя id = {} друга id = {}", id, friendId);
+        eventService.createEvent(id, EventType.FRIEND, Operation.REMOVE, friendId);
     }
 
     public Collection<User> getFriends(Long id) {
@@ -125,12 +132,10 @@ public class UserService {
                 .map(this::get).collect(Collectors.toList());
         log.info("Коллекция общих друзей id = {} с id = {} передана", id, otherId);
         return commonFriends;
-
     }
 
     private void setUsersFriends(User user) {
         user.setFriends(new HashSet<>(friendsService.getUsersFriendsById(user.getId())));
     }
-
 
 }

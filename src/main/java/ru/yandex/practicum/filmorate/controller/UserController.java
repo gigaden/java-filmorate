@@ -4,20 +4,38 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    private final EventService eventService;
+    private final FilmService filmService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EventService eventService, FilmService filmService) {
         this.userService = userService;
+        this.eventService = eventService;
+        this.filmService = filmService;
+    }
+
+    /**
+     * Получение записей событий из базы данных.
+     */
+    @GetMapping("/{userId}/feed")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Event> getEvent(@PathVariable Long userId) {
+        return eventService.findEventsByUserId(userId);
     }
 
     // Получаем всех пользователей
@@ -49,10 +67,10 @@ public class UserController {
     }
 
     // Обрабатываем запрос на удаление пользователя
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void delete(@PathVariable Long id) {
-        userService.delete(id);
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable Long userId) {
+        userService.delete(userId);
     }
 
     // Добавляем в друзья
@@ -83,5 +101,11 @@ public class UserController {
         return userService.getCommonFriends(id, otherId);
     }
 
+    // Возвращаем рекомендации по фильмам для просмотра
+    @GetMapping("/{id}/recommendations")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<Film> getRecommendedFilms(@PathVariable Long id) {
+        return filmService.getRecommendedFilms(id);
+    }
 
 }

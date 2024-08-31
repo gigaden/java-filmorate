@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.dal.film.BaseDbStorage;
+import ru.yandex.practicum.filmorate.dal.BaseDbStorage;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -53,6 +53,4 @@ public class FriendsStorage extends BaseDbStorage<User> {
     public Collection<User> getAllFriends(long id) {
         return findMany(GET_ALL_USERS_FRIENDS, id);
     }
-
-
 }
