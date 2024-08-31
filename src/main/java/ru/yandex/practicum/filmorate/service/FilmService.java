@@ -27,23 +27,26 @@ public class FilmService {
     private final UserService userService;
     private final MpaService mpaService;
     private final GenreService genreService;
-    private final LikeService likeService;
+    private final RatingService ratingService;
     private final EventService eventService;
     private final DirectorService directorService;
     private final LocalDate releaseDate = LocalDate.of(1895, 12, 28);
     private static final int maxLengthOfDescription = 200;
 
+
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        UserService userService, MpaService mpaService, GenreService genreService,
-                       LikeService likeService, DirectorService directorService, EventService eventService) {
+                       RatingService ratingService, DirectorService directorService, EventService eventService
+    ) {
         this.filmStorage = filmStorage;
         this.userService = userService;
         this.mpaService = mpaService;
         this.genreService = genreService;
-        this.likeService = likeService;
+        this.ratingService = ratingService;
         this.eventService = eventService;
         this.directorService = directorService;
+
     }
 
     public Collection<Film> getAll() {
@@ -74,7 +77,7 @@ public class FilmService {
             throw new ValidationException("Название не может быть пустым.");
         }
         checkFields(film);
-        film.setLikes(new HashSet<>());
+        film.setRatingId(new HashSet<>());
         if (film.getGenres() == null) {
             film.setGenres(new LinkedHashSet<>());
         }
@@ -128,27 +131,35 @@ public class FilmService {
         log.info("Фильм с id = {} удалён.", id);
     }
 
-    public void addLike(Long id, Long userId) {
+    /**
+     * Добавление оценки.
+     */
+    public void addRatingByFilm(Long id, Long userId, Integer rating) {
         log.info("Попытка поставить лайк фильму с id={} юзером с id={}.", id, userId);
         get(id);
         userService.get(userId);
-        likeService.addLike(id, userId);
-        eventService.createEvent(userId, EventType.LIKE, Operation.ADD, id);
+        ratingService.addRatingByFilm(id, userId, rating);
+        eventService.createEvent(userId, EventType.RATING, Operation.ADD, id);
         log.info("Фильму с id={} поставил лайк юзер с id={}.", id, userId);
     }
 
-    public void deleteLike(Long id, Long userId) {
+    /**
+     * Удаление оценки.
+     */
+    public void deleteRatingByFilm(Long id, Long userId) {
         log.info("Попытка убрать лайк фильму с id={} юзером с id={}.", id, userId);
         get(id);
         userService.get(userId);
-        likeService.delLike(id, userId);
-        eventService.createEvent(userId, EventType.LIKE, Operation.REMOVE, id);
+        ratingService.deleteRatingByFilm(id, userId);
+        eventService.createEvent(userId, EventType.RATING, Operation.REMOVE, id);
         log.info("Пользователь с id = {} убрал лайк фильму с id = {}", userId, id);
     }
-
+ // сортирнуть не по лайкам а по рейтиингу , выше рейтинг desc
     public Collection<Film> getPopularFilms(int count, Integer genreId, Integer year) {
         log.info("Запрос на получение популярных фильмов.");
-        Collection<Film> popularFilms = filmStorage.getPopularFilms(count, genreId, year);
+        Collection<Film> popularFilms = filmStorage.getPopularFilms(count, genreId, year).stream()
+                .sorted((f1, f2) -> Double.compare(f2.getRating(),f1.getRating()))
+                .collect(Collectors.toList());
         for (Film film : popularFilms) {
             setFilmFields(film);
         }
@@ -159,8 +170,8 @@ public class FilmService {
     public List<Film> getSharedFilms(Long userId, Long friendId) {
         log.info("Попытка получить общие фильмы userId={}, friendId={}.", userId, friendId);
         List<Film> filmList = getAll().stream()
-                .filter(film -> film.getLikes().contains(friendId) && film.getLikes().contains(userId))
-                .sorted(Comparator.comparingInt((Film el) -> el.getLikes().size()).reversed())
+                .filter(film -> film.getRatingId().contains(friendId) && film.getRatingId().contains(userId))
+                .sorted(Comparator.comparingInt((Film el) -> el.getRatingId().size()).reversed())
                 .toList();
         log.info("Общие фильмы успешно получены userId={}, friendId={}.", userId, friendId);
         return filmList;
@@ -181,8 +192,8 @@ public class FilmService {
             films = switch (str) {
                 case "year" -> films.stream()
                         .sorted(Comparator.comparing(Film::getReleaseDate)).collect(Collectors.toList());
-                case "likes" -> films.stream()
-                        .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
+                case "rating" -> films.stream()
+                        .sorted((f1, f2) -> Double.compare(f2.getRating(),f1.getRating()))
                         .collect(Collectors.toList());
                 default -> films;
             };
@@ -212,7 +223,7 @@ public class FilmService {
         log.info("Коллекция фильмов по запросу отправлена.");
         return films.stream()
                 .peek(this::setFilmFields)
-                .sorted(Comparator.comparingInt((Film el) -> el.getLikes().size()).reversed())
+                .sorted(Comparator.comparingInt((Film el) -> el.getRatingId().size()).reversed())
                 .collect(Collectors.toList());
 
     }
@@ -263,10 +274,12 @@ public class FilmService {
     // Возвращаем рекомендации по фильмам для просмотра
     public Collection<Film> getRecommendedFilms(Long id) {
         log.info("Пытаемся получить коллекцию рекомендованных фильмов");
+
         final Collection<Film> films = filmStorage.getRecommendedFilms(id);
         for (Film film : films) {
             setFilmFields(film);
         }
+
         log.info("Рекомендованные фильмы успешно переданы");
         return films;
     }
@@ -275,7 +288,7 @@ public class FilmService {
     private void setFilmFields(Film film) {
         film.setMpa(mpaService.get(film.getMpa().getId()));
         film.setGenres(new LinkedHashSet<>(genreService.getAllFilmGenreById(film.getId())));
-        film.setLikes(new HashSet<>(likeService.getLikesByFilmId(film.getId())));
+        film.setRatingId(new HashSet<>(ratingService.findUsersByFilmRating(film.getId())));
         film.setDirectors(new LinkedHashSet<>(directorService.getAllDirectorsByFilmId(film.getId())));
     }
 }

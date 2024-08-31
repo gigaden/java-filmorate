@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dal.film;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,12 +12,14 @@ import java.util.Collection;
 import java.util.Optional;
 
 @Repository("filmDbStorage")
+@Slf4j
 public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String FIND_ALL_QUERY = "SELECT * FROM films f JOIN mpas m ON f.mpa = m.id";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM films WHERE id = ?";
-    private static final String INSERT_QUERY = "INSERT INTO films(name, description, releaseDate," +
-            "duration, mpa)" +
-            "VALUES (?,?,?,?,?)";
+    private static final String INSERT_QUERY = """
+            INSERT INTO films(name, description, releaseDate, duration, mpa, rating)
+            VALUES (?,?,?,?,?,?)
+            """;
     private static final String UPDATE_QUERY = "UPDATE films SET name = ?, description = ?," +
             " releaseDate = ?, duration = ?, mpa = ? WHERE id = ?";
     private static final String DELETE_BY_ID = "DELETE from films WHERE id = ?";
@@ -27,36 +30,62 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             """;
     private static final String FIND_RECOMMENDED_FILMS_QUERY = """
             WITH user_like AS (
-                 SELECT films_id
-                 FROM likes
+                 SELECT films_id, rating
+                 FROM ratings
                  WHERE users_id = ?
             ),
             matched_like AS (
                  SELECT l.users_id, COUNT(l.films_id)
-                 FROM likes l
-                 LEFT JOIN user_like ul ON l.films_id = ul.films_id
+                 FROM ratings l
+                 INNER JOIN user_like ul ON l.films_id = ul.films_id
+                 AND ABS(l.rating - ul.rating) <= 1
                  WHERE l.users_id != ?
                  GROUP BY l.users_id
                  ORDER BY COUNT(l.films_id) DESC
                  LIMIT 1
             )
             SELECT f.*
-            FROM likes l
+            FROM ratings l
             LEFT JOIN films f ON f.ID = l.films_id
-            LEFT JOIN matched_like ml ON ml.users_id = l.users_id
-            WHERE l.films_id NOT IN (SELECT films_id FROM likes WHERE users_id = ?);
+            INNER JOIN matched_like ml ON ml.users_id = l.users_id
+            WHERE l.films_id NOT IN (SELECT films_id FROM ratings WHERE users_id = ?)
+            AND f.rating > 5
             """;
-    private static final String SEARCH_BY_NAME_AND_QUERY = "SELECT * FROM films WHERE LOWER(name) LIKE LOWER('%' || ? || '%')";
+// новый запрос неработает с рейтингами
+/*    private static final String FIND_RECOMMENDED_FILMS_QUERY22 = """
+            WITH user_rating AS (
+                 SELECT films_id
+                 FROM rating
+                 WHERE users_id = ?
+            ),
+            matched_rating AS (
+                 SELECT r.users_id, COUNT(r.films_id)
+                 FROM rating r
+                 LEFT JOIN user_rating ur ON r.films_id = ur.films_id
+                 AND ABS(l1.USER_RATING - l2.USER_RATING) <= 1
+                 WHERE r.users_id != ?
+                 GROUP BY r.users_id
+                 ORDER BY COUNT(r.films_id) DESC
+                 LIMIT 1
+            )
+            SELECT f.*
+            FROM rating r
+            LEFT JOIN films f ON f.ID = r.films_id
+            LEFT JOIN matched_rating mr ON mr.users_id = r.users_id
+            WHERE r.films_id NOT IN (SELECT films_id FROM rating WHERE users_id = ?)
+            """;*/
+    private static final String SEARCH_BY_NAME_AND_QUERY = "SELECT * FROM films WHERE LOWER(name) RATING LOWER('%' || ? || '%')";
     private static final String SEARCH_BY_DIRECTOR_AND_QUERY = """
             SELECT * FROM FILMS WHERE ID in
             (SELECT film_id FROM	FILM_DIRECTOR
             WHERE DIRECTOR_ID in
-            (SELECT id FROM DIRECTORS d WHERE LOWER(name) LIKE LOWER('%' || ? || '%')));
+            (SELECT id FROM DIRECTORS d WHERE LOWER(name) RATING LOWER('%' || ? || '%')));
             """;
     private static final String FIND_POPULAR_FILMS_QUERY = """
-            SELECT f.* FROM films f
+            SELECT f.*
+            FROM films f
             LEFT JOIN mpas m ON f.mpa = m.id
-            LEFT JOIN likes l ON f.id = l.films_id
+            LEFT JOIN ratings l ON f.id = l.films_id
             LEFT JOIN film_genre fg ON f.id = fg.film_id
             WHERE (? IS NULL OR YEAR(f.releaseDate) = ?)
             AND (? IS NULL OR fg.GENRE_ID = ?)
@@ -64,6 +93,19 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             ORDER BY COUNT(l.users_id) DESC
             LIMIT ?;
             """;
+// новый запрос на популярные фильмы
+//    private static final String FIND_POPULAR_FILMS_QUERY = """
+//            SELECT f.*
+//            FROM films f
+//            LEFT JOIN mpas m ON f.mpa = m.id
+//            LEFT JOIN likes l ON f.id = l.films_id
+//            LEFT JOIN film_genre fg ON f.id = fg.film_id
+//            WHERE (? IS NULL OR YEAR(f.releaseDate) = ?)
+//            AND (? IS NULL OR fg.GENRE_ID = ?)
+//            GROUP BY f.id
+//            ORDER BY COUNT(l.users_id) DESC
+//            LIMIT ?;
+//            """;
 
     public FilmDbStorage(JdbcTemplate jdbc, FilmRowMapper mapper) {
         super(jdbc, mapper);
@@ -95,11 +137,14 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     @Transactional
     public Film create(Film film) {
+        film.setRating(0.0);
         long id = insert(INSERT_QUERY,
-                film.getName(), film.getDescription(),
+                film.getName(),
+                film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
-                film.getMpa().getId());
+                film.getMpa().getId(),
+                film.getRating());
         film.setId(id);
         return film;
     }
@@ -114,7 +159,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 film.getDuration(),
                 film.getMpa().getId(),
                 film.getId());
-
         return film;
     }
 
